@@ -95,4 +95,41 @@
 
 ---
 
-*(后续 TDD / E2E 阶段 Prompt 将续写于下方段落。)*
+---
+
+## 第 4 段 · 【TDD 阶段】核心逻辑测试用例与业务实现
+
+**范式定位:** 测试驱动。先给"测试清单"确认覆盖,再严格 RED→GREEN→REFACTOR,靠实现转绿、绝不改断言凑绿。
+
+**原始 Prompt 要点(先清单后 RED):**
+> 用 test-driven-development,先只给测试清单(不写实现/测试代码),覆盖三块核心逻辑:A 嘉宾生成(1主持+N专家/颜色互异/立场有别/字段完整/人数边界)、B 发言调度(内容驱动非轮流/反驳须有效target/不许连说·补充自己例外/1–2句/主持人节奏/硬上限16/失败降级三级)、C 共识提炼(仅主持人回合/解析去重入库/实时)。每条列测试名·输入·期望断言。AI 一律 Mockito 打桩,零网络。确认后进 RED。
+
+**原始 Prompt 要点(GREEN 纪律):**
+> 逐单元 RED→GREEN→REFACTOR,每单元跑绿即 commit。靠实现让测试通过,绝不改断言凑绿;测试语义有误先停下问,不静默改测试。实现真实 DeepseekClient(P1/P2/P3 prompt + JSON 解析 + 从 env 读 key),但单测仍 Mockito 打桩,真实调用留后阶段。
+
+**意图:** 用测试把"非机械轮流/失败降级/仅主持人回合产出"这些易出错逻辑钉死,避免大模型幻觉式实现。契约先行(桩)让 33 条测试先编译后全红,证明测试确实在测目标行为。
+
+**遇到的挑战与如何引导修正:**
+1. **补红线缺口**:清单确认时新增两条——`补充` 例外收窄到"补充自己上一句"(否则补充成绕过连说的后门)、`speakerId 不在阵容`须判非法触发降级。防止规则被钻空。
+2. **A2 颜色语义澄清**:颜色一律后端按调色板 index 指派、不信任 LLM 配色(P1 可不出颜色)——测试断言"服务指派后专家色互异",而非校验 LLM 输出。
+3. **MyBatis-Plus 3.5.9 依赖坑**:`PaginationInnerInterceptor` 拆到独立 `mybatis-plus-jsqlparser` 依赖,编译报"找不到符号";补依赖解决。
+4. **RED 全红**:33 条测试因桩 `UnsupportedOperationException` 全部失败(4 Failures + 29 Errors),每条断在被测方法上——证明非编译错、非笔误。逐单元实现后 GREEN。
+
+---
+
+## 第 5 段 · 【E2E 阶段】系统级端到端测试与质量闭环
+
+**范式定位:** 质量闭环。建 Web 层(REST + SSE + 引擎真跑),前端切真实接口,用"假 AI"跑确定性 E2E,真实 Deepseek 只做一次小成本冒烟。
+
+**原始 Prompt 要点:**
+> 建 web 层打通端到端:REST(列表/创建P1/重生成/confirm→running提交引擎/详情)+ SSE(SseHub 每讨论 emitter 组/广播/~20s心跳/onCompletion/onTimeout/onError 清死连接)+ DiscussionRegistry(ConcurrentHashMap)+ 有界线程池(3)+ 引擎循环真跑;新连接先 snapshot 再实时;单写者交接;启动 WAL+残留 running 标 interrupted。集成测试补 A2/A7/A8/A9。前端切真实 fetch+EventSource、删 mockData/useMockStream/DEMO_STATUS。E2E 跑在 fake-ai profile(零 Deepseek 花费、确定性),真实 Deepseek 只手动冒烟一次(并发1/上限6/记花费,DEEPSEEK_MODEL 设真实 V4 Pro id)。
+
+**意图:** 端到端闭环验证"沉浸感/实时感"真的落地;用 fake-ai 把 E2E 做成确定性、可重复、零花费、不 flaky,把真实 AI 花费压到一次冒烟。
+
+**遇到的挑战与如何引导修正(真实踩坑):**
+1. **SQLite `speech.id=seq` 主键碰撞(集成测试逮到的生产级隐患)**:引擎 `persist()` 把 `seq` 手设成主键 → 不同讨论/累积库里 `speech.id` 必撞(`SQLITE_CONSTRAINT_PRIMARYKEY`)。**单测发现不了**(mock 了 mapper),是集成测试 A7(两讨论并行)才暴露。修:不设 id、让 MyBatis-Plus AUTO 回填真实自增 id。用 systematic-debugging 查异常栈定位,未盲改。
+2. **测试隔离**:集成库初用 `:memory:?cache=shared`,`journal_mode=memory`(非 WAL)导致读阻塞写、上下文关闭时内存库被销毁 → 引擎线程写超时/失败。换成 `target` 文件库 + WAL(读不阻塞写、不销毁)。
+3. **SSE 测试方式**:MockMvc 对 `SseEmitter` 的 `getAsyncResult/asyncDispatch` 不适用("async result not set")。改用真 HTTP(A8 读首个事件=snapshot)+ 直接 hub(A9 经广播失败清理路径)。
+4. **E2E 预算策略**:`@Profile("fake-ai")` 的 `FakeAiService` 确定性产出合法 P1/P2/P3;`DeepseekAiService` 加 `@Profile("!fake-ai")` 避免双 bean。错误态用 `__FAIL__` 话题钩子确定性触发。E2E 零花费、可重复。
+5. **v4-pro 推理模型成本/延迟**:真实冒烟一场 6 轮讨论 = 7 次调用、prompt 2179 + completion 2386(含 reasoning 1723)tokens ≈ ¥0.05、约 57s。给 DeepseekClient 加 usage 日志(分列 prompt/completion/reasoning)+ 180s 读超时;只取 `message.content`,不读 `reasoning_content`(CoT 不泄漏)。详见 `docs/SMOKE.md`。
+
