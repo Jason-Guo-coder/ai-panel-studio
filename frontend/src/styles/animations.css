@@ -1,0 +1,55 @@
+/* 动效 keyframes(design.md §4)+ 运动安全(§4.5) —— 优先 steps() 像素跳变 */
+
+/* §4.1 像素声波 */
+@keyframes pixel-wave {
+  0%, 100% { height: 4px; }
+  50%      { height: 14px; }
+}
+
+/* §4.2 待机 idle bob */
+@keyframes idle-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(2px); }
+}
+
+/* §4.2 准备 bounce */
+@keyframes prepare-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+
+/* §4.2 发言中 嘴部开合(两态) */
+@keyframes mouth-talk {
+  0%, 100% { transform: scaleY(1); }
+  50%      { transform: scaleY(0.3); }
+}
+
+/* §4.3 LIVE 闪烁 */
+@keyframes live-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+
+/* §4.4 新发言滚动进入 */
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* §5 加载:转圈砖块(4 帧) */
+@keyframes brick-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* §4.5 运动安全(无障碍红线):关键动效可关,状态靠静态样式不丢失 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .crt-overlay { opacity: 0.12; }   /* 扫描线转静态、更淡 */
+  .live-badge  { opacity: 1 !important; } /* 闪烁 → 常亮红点 */
+}

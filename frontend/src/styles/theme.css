@@ -1,0 +1,53 @@
+/* 设计令牌 —— 对齐 docs/design.md §1(调色板)/§2(字体)/§6(断点) */
+
+/* Fusion Pixel 12(简体),本地内嵌,运行时不依赖 CDN */
+@font-face {
+  font-family: "Fusion Pixel 12";
+  src: url("../assets/fonts/FusionPixel12.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* §1 舞台三层背景 */
+  --bg-stage: #0D0F14;
+  --bg-panel: #161A22;
+  --bg-elevated: #1E2430;
+  --border: #2A3140;
+  --border-strong: #3A4356;
+
+  /* §1 文本(对比度达标) */
+  --text-primary: #E6EDF3;
+  --text-secondary: #9AA4B2;
+  --text-dim: #6B7480;
+
+  /* §1 LIVE 信号红(专用) */
+  --live-red: #FF3B30;
+  --live-glow: rgba(255, 59, 48, 0.45);
+
+  /* §1 共识/分歧语义色 */
+  --consensus: #3FB950;
+  --divergence: #F0883E;
+
+  /* §1 专家专属有序调色板(P1 新讨论按 expertIndex % 8 取色) */
+  --expert-1: #2563EB;
+  --expert-2: #DB2777;
+  --expert-3: #16A34A;
+  --expert-4: #F59E0B;
+  --expert-5: #7C3AED;
+  --expert-6: #0891B2;
+  --expert-7: #EA580C;
+  --expert-8: #0D9488;
+
+  /* §1/§3 主持人中性灰(与专家区隔) */
+  --host-color: #6B7280;
+
+  /* §2 字体栈 */
+  --font-pixel: "Fusion Pixel 12", "Zpix", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-readable: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+
+  /* §6 断点(供 JS/参考;媒体查询按同值硬编码) */
+  --bp-desktop: 1024px;
+  --bp-wide: 1600px;
+}
