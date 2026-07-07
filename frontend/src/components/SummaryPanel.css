@@ -1,0 +1,70 @@
+/* SummaryPanel —— design.md §3.6 / §2 可读性红线。像素纯 CSS,无 PNG。 */
+
+.summary-panel {
+  background: var(--bg-panel);
+  border: 2px solid var(--border);
+  /* §3 主席台差异化:主持人中性灰 accent(左侧色块) */
+  border-left: 4px solid var(--host-color);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* §2 标题:像素字,16px(12 的整数倍,像素不糊),中性灰 accent */
+.summary-panel__title {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  line-height: 1;
+  color: var(--host-color);
+  letter-spacing: 1px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border-strong);
+}
+
+.summary-panel__body {
+  min-height: 48px;
+}
+
+/* 生成中…:像素砖块转圈 + 短文本(像素字仅用于短字符串) */
+.summary-panel__loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-secondary);
+}
+
+.summary-panel__spinner {
+  width: 14px;
+  height: 14px;
+  background: var(--host-color);
+  /* 像素砖块:硬边、无圆角;转圈用 §5 brick-spin,steps() 逐帧跳变 */
+  animation: brick-spin 0.8s steps(4, end) infinite;
+}
+
+.summary-panel__loading-text {
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+/* 空态:仅占位用 --text-dim(非正文) */
+.summary-panel__empty {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
+/* §2 summary 正文:舒适度优先——16px / 允许清晰字体 / 行高 ~1.7 / AA 对比正文色 */
+.summary-panel__text {
+  margin: 0;
+  font-family: var(--font-readable);
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
