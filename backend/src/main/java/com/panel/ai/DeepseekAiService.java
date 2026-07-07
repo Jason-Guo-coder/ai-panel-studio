@@ -119,6 +119,9 @@ public class DeepseekAiService implements AiService {
         String transcript = ctx.transcript().stream()
                 .map(s -> "#" + s.getId() + " p" + s.getParticipantId() + ": " + s.getContent())
                 .collect(Collectors.joining("\n"));
-        return "阵容:\n" + roster + "\n\n当前记录:\n" + (transcript.isEmpty() ? "(空,待开场)" : transcript);
+        String directive = ctx.forceHost()
+                ? "\n\n【现在必须由主持人(role=host)以 reactionType=串联 发言,简述各方观点,并在 insights 中给出至少 1 条共识与 1 条分歧】"
+                : "";
+        return "阵容:\n" + roster + "\n\n当前记录:\n" + (transcript.isEmpty() ? "(空,待开场)" : transcript) + directive;
     }
 }

@@ -3,6 +3,7 @@ package com.panel.engine;
 import com.panel.ai.AiService;
 import com.panel.ai.dto.TurnContext;
 import com.panel.ai.dto.TurnProposal;
+import com.panel.entity.Insight;
 import com.panel.entity.Participant;
 import com.panel.entity.Speech;
 import com.panel.mapper.DiscussionMapper;
@@ -54,7 +55,7 @@ class DiscussionEngineTest {
         Speech s = new Speech();
         s.setId(1L); s.setParticipantId(1L); s.setSeq(1); s.setReactionType("开场"); s.setContent("开场。");
         t.add(s);
-        return new TurnContext(1L, t, roster(), 1, 0);
+        return new TurnContext(1L, t, roster(), 1, 0, false);
     }
 
     private TurnProposal validExpertTurn() {
@@ -86,6 +87,19 @@ class DiscussionEngineTest {
         engine().runDiscussion(1L, roster());
         verify(events).error(eq(1L), anyString());
         verify(discussionMapper).updateStatus(eq(1L), eq("interrupted"));
+    }
+
+    @Test
+    void hostTurnInsights_areBroadcast() {
+        // 回归:主持人回合提炼出的 insight 必须实时广播(评审 finding #1)
+        when(ai.proposeTurn(any())).thenReturn(new TurnProposal(1L, "开场", null, "开场白。", null, List.of()));
+        when(ai.summarize(any())).thenReturn("总结。");
+        Insight ins = new Insight();
+        ins.setType("consensus");
+        ins.setContent("X");
+        when(insightExtractor.extract(any(), eq(true), anyLong())).thenReturn(List.of(ins));
+        engine().runDiscussion(1L, roster());
+        verify(events, atLeastOnce()).insight(eq(1L), any());
     }
 
     @Test

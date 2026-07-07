@@ -47,10 +47,12 @@ public class SseEventPublisher implements EventPublisher {
     @Override
     public void finished(long discussionId) {
         hub.broadcast(discussionId, "finished", new FinishedPayload(discussionId));
+        registry.remove(discussionId); // 终态清理 liveState,防 session 无限累积
     }
 
     @Override
     public void error(long discussionId, String message) {
         hub.broadcast(discussionId, "error", new ErrorPayload(message));
+        registry.remove(discussionId);
     }
 }

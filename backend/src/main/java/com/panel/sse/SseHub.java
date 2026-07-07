@@ -24,29 +24,34 @@ public class SseHub {
 
     public SseEmitter subscribe(long discussionId) {
         SseEmitter emitter = new SseEmitter(0L); // 0 = 不超时(靠心跳保活 + 客户端断开回调清理)
-        emitters.computeIfAbsent(discussionId, k -> new CopyOnWriteArrayList<>()).add(emitter);
+        List<SseEmitter> group = emitters.computeIfAbsent(discussionId, k -> new CopyOnWriteArrayList<>());
         emitter.onCompletion(() -> remove(discussionId, emitter));
         emitter.onTimeout(() -> remove(discussionId, emitter));
         emitter.onError(e -> remove(discussionId, emitter));
-        try {
-            // 先推当前快照,保证新观众小窗非空白
-            emitter.send(SseEmitter.event().name("snapshot").data(registry.session(discussionId).snapshot()));
-        } catch (IOException e) {
-            remove(discussionId, emitter);
+        // 与 broadcast 互斥:先发 snapshot 再入组,保证该连接收到的任何实时事件都严格晚于 snapshot(L8)
+        synchronized (group) {
+            try {
+                emitter.send(SseEmitter.event().name("snapshot").data(registry.session(discussionId).snapshot()));
+                group.add(emitter);
+            } catch (IOException e) {
+                // 客户端已断:不加入组
+            }
         }
         return emitter;
     }
 
     public void broadcast(long discussionId, String event, Object data) {
-        List<SseEmitter> list = emitters.get(discussionId);
-        if (list == null) {
+        List<SseEmitter> group = emitters.get(discussionId);
+        if (group == null) {
             return;
         }
-        for (SseEmitter emitter : list) {
-            try {
-                emitter.send(SseEmitter.event().name(event).data(data));
-            } catch (Exception ex) {
-                remove(discussionId, emitter);
+        synchronized (group) {
+            for (SseEmitter emitter : group) {
+                try {
+                    emitter.send(SseEmitter.event().name(event).data(data));
+                } catch (Exception ex) {
+                    remove(discussionId, emitter);
+                }
             }
         }
     }

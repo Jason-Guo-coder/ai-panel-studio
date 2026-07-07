@@ -3,6 +3,7 @@ package com.panel.engine;
 import com.panel.ai.AiService;
 import com.panel.ai.dto.TurnContext;
 import com.panel.ai.dto.TurnProposal;
+import com.panel.entity.Insight;
 import com.panel.entity.Participant;
 import com.panel.entity.Speech;
 import com.panel.mapper.DiscussionMapper;
@@ -58,17 +59,22 @@ public class DiscussionEngine {
         int consecutiveDegraded = 0;
         Long lastExpertSpeaker = null; // 用于把上一位发言专家复位为待机
 
-        while (transcript.size() < maxSpeeches) {
-            TurnContext ctx = new TurnContext(discussionId, transcript, roster, transcript.size(), expertTurnsSinceHost);
-
-            // 主持人节奏:累计专家发言达阈值,强制插入一个主持人回合(非降级)
+        while (transcript.size() < maxSpeeches - 1) { // 留 1 条给收尾,总发言数 ≤ maxSpeeches
+            // 主持人节奏:到点则让 AI 以主持人身份串联(带 insights);未给主持人回合再合成兜底
             TurnProposal turn;
             boolean degraded;
             if (!transcript.isEmpty() && scheduler.shouldHostInterject(expertTurnsSinceHost)) {
-                turn = forcedHostTurn(ctx);
-                degraded = false;
+                TurnContext hostCtx = new TurnContext(discussionId, transcript, roster, transcript.size(), expertTurnsSinceHost, true);
+                Attempt a = attempt(hostCtx);
+                if (isHost(a.proposal.speakerId(), roster)) {
+                    turn = a.proposal;
+                    degraded = a.degraded;
+                } else {
+                    turn = forcedHostTurn(ctxOf(discussionId, transcript, roster, expertTurnsSinceHost));
+                    degraded = false;
+                }
             } else {
-                Attempt a = attempt(ctx);
+                Attempt a = attempt(ctxOf(discussionId, transcript, roster, expertTurnsSinceHost));
                 turn = a.proposal;
                 degraded = a.degraded;
             }
@@ -99,7 +105,10 @@ public class DiscussionEngine {
             }
             events.speech(discussionId, saved);
 
-            insightExtractor.extract(turn, isHostTurn, discussionId);
+            // 提炼共识/分歧(仅主持人回合)并实时广播
+            for (Insight ins : insightExtractor.extract(turn, isHostTurn, discussionId)) {
+                events.insight(discussionId, ins);
+            }
             expertTurnsSinceHost = isHostTurn ? 0 : expertTurnsSinceHost + 1;
         }
 
@@ -110,6 +119,10 @@ public class DiscussionEngine {
     // ── 内部 ──
 
     private record Attempt(TurnProposal proposal, boolean degraded) {
+    }
+
+    private TurnContext ctxOf(long discussionId, List<Speech> transcript, List<Participant> roster, int expertTurnsSinceHost) {
+        return new TurnContext(discussionId, transcript, roster, transcript.size(), expertTurnsSinceHost, false);
     }
 
     // 重试 1 次(共 2 次尝试);仍失败 → 合成主持人回合(约束最松,几乎必合法),degraded=true
@@ -154,7 +167,7 @@ public class DiscussionEngine {
     }
 
     private void close(long discussionId, List<Participant> roster, List<Speech> transcript) {
-        TurnContext ctx = new TurnContext(discussionId, transcript, roster, transcript.size(), 0);
+        TurnContext ctx = new TurnContext(discussionId, transcript, roster, transcript.size(), 0, false);
         String summary = ai.summarize(ctx);
 
         long hostId = roster.stream().filter(p -> "host".equals(p.getRole()))
@@ -168,6 +181,7 @@ public class DiscussionEngine {
         closing.setCreatedAt(LocalDateTime.now().format(TS));
         speechMapper.insert(closing);
 
+        events.speech(discussionId, closing); // 收尾发言也广播,直播观众可见
         discussionMapper.updateSummary(discussionId, summary);
         discussionMapper.updateStatus(discussionId, "finished");
         events.summary(discussionId, summary);

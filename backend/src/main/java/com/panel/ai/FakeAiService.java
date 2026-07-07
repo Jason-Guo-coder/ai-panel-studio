@@ -41,8 +41,8 @@ public class FakeAiService implements AiService {
         }
         Speech last = t.get(t.size() - 1);
 
-        // 每 3 条来一次主持人串联,并产出共识/分歧(仅主持人回合)
-        if (t.size() % 3 == 0 && !last.getParticipantId().equals(hostId)) {
+        // 到点由主持人串联,并产出共识/分歧(仅主持人回合)
+        if (ctx.forceHost()) {
             return new TurnProposal(hostId, "串联", null, "我先把大家的观点串一下。", null,
                     List.of(new InsightDraft("consensus", "各方对核心事实达成共识。"),
                             new InsightDraft("divergence", "在落地路径上仍存在分歧。")));

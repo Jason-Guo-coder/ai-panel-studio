@@ -8,11 +8,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-// 共识/分歧提炼:仅主持人回合产出;解析/去重(type+content)/实时入库。
+// 共识/分歧提炼:仅主持人回合产出;解析/去重(type+content)/实时入库。返回新入库的 insight 供引擎广播。
 @Service
 public class InsightExtractor {
 
@@ -24,13 +25,14 @@ public class InsightExtractor {
         this.insightMapper = insightMapper;
     }
 
-    public void extract(TurnProposal proposal, boolean isHostTurn, long discussionId) {
+    public List<Insight> extract(TurnProposal proposal, boolean isHostTurn, long discussionId) {
+        List<Insight> inserted = new ArrayList<>();
         if (!isHostTurn) {
-            return; // 仅主持人回合产出共识/分歧
+            return inserted; // 仅主持人回合产出共识/分歧
         }
         List<InsightDraft> drafts = proposal.insights();
         if (drafts == null || drafts.isEmpty()) {
-            return;
+            return inserted;
         }
 
         Set<String> seen = new HashSet<>();
@@ -52,7 +54,9 @@ public class InsightExtractor {
             insight.setContent(d.content());
             insight.setCreatedAt(LocalDateTime.now().format(TS));
             insightMapper.insert(insight); // 实时入库,不等收尾
+            inserted.add(insight);
         }
+        return inserted;
     }
 
     private String key(String type, String content) {
