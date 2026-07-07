@@ -90,8 +90,8 @@
   flex: 1 1 auto;
   min-height: 0; /* 允许在 stage 内收缩并独立滚动,不撑破本区 */
   display: flex;
-  gap: 10px;
-  padding: 10px;
+  gap: 16px;      /* 加大间距,给发言态光晕上下留出空间 */
+  padding: 14px;  /* 容器内边距,避免首尾卡片光晕被滚动区裁掉 */
   /* 窄屏:专家小窗一行横向滚动 */
   overflow-x: auto;
   overflow-y: hidden;

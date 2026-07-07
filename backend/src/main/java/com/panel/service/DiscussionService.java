@@ -1,6 +1,7 @@
 package com.panel.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.panel.entity.Discussion;
 import com.panel.entity.Insight;
 import com.panel.entity.Participant;
@@ -93,10 +94,14 @@ public class DiscussionService {
         if ("running".equals(d.getStatus())) {
             throw new InvalidStateException("讨论进行中,无法删除");
         }
-        // 显式删子表(不依赖 FK 级联),再删主表
-        participantMapper.delete(new QueryWrapper<Participant>().eq("discussion_id", id));
+        // 按外键依赖顺序删除(foreign_keys=on):
+        // 1) 先清 speech 的自引用 target_speech_id,避免批量删 speech 时自引用外键冲突
+        speechMapper.update(null,
+                new UpdateWrapper<Speech>().eq("discussion_id", id).set("target_speech_id", null));
+        // 2) speech 引用 participant/discussion,先删;3) insight;4) participant;5) discussion
         speechMapper.delete(new QueryWrapper<Speech>().eq("discussion_id", id));
         insightMapper.delete(new QueryWrapper<Insight>().eq("discussion_id", id));
+        participantMapper.delete(new QueryWrapper<Participant>().eq("discussion_id", id));
         discussionMapper.deleteById(id);
     }
 

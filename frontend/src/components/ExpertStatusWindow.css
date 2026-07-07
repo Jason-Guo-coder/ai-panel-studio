@@ -8,7 +8,7 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 10px;
+  padding: 12px;
   background: var(--bg-elevated);
   /* 阶梯像素厚边(默认态用中性边框) */
   border: 2px solid var(--border);
@@ -152,7 +152,8 @@
 /* 发言中:嘴部动画 + 聚光灯 + 边框高亮(静态实色) */
 .expert-window.status-speaking {
   border-color: var(--speaker-color);
-  /* 聚光灯:2px 描边 + 外辉光,慢呼吸(§4.1) */
+  /* 聚光灯:2px 描边 + 外辉光;z-index 抬升,使上下光晕绘制在相邻卡片之上、不被遮挡 */
+  z-index: 2;
   box-shadow:
     0 0 0 2px var(--speaker-color),
     0 0 20px 2px var(--speaker-color);
@@ -165,6 +166,7 @@
 /* isCurrentSpeaker:聚光灯强调(更强外辉光) */
 .expert-window.is-current {
   border-color: var(--speaker-color);
+  z-index: 3;
   box-shadow:
     0 0 0 2px var(--speaker-color),
     0 0 28px 4px var(--speaker-color);

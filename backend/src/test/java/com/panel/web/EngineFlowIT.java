@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -66,6 +67,17 @@ class EngineFlowIT extends WebIntegrationTest {
         JsonNode d = awaitFinished(id);
         assertNotEquals("generating", d.get("discussion").get("status").asText(), "确认后应离开 generating");
         assertTrue(d.get("speeches").size() >= 1, "引擎循环应写入发言");
+    }
+
+    @Test
+    void delete_finishedDiscussion_withChildren() throws Exception {
+        // 回归:删含 speech/insight 的 finished 讨论(外键顺序 bug)
+        long id = create("待删完结");
+        confirm(id);
+        JsonNode d = awaitFinished(id);
+        assertTrue(d.get("speeches").size() >= 1 && d.get("insights").size() >= 1);
+        mvc.perform(delete("/api/discussions/" + id)).andExpect(status().isNoContent());
+        mvc.perform(get("/api/discussions/" + id)).andExpect(status().isNotFound());
     }
 
     @Test
