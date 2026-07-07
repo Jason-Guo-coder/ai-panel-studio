@@ -22,3 +22,6 @@ target/
 frontend/test-results/
 frontend/playwright-report/
 frontend/.playwright/
+
+# 一键启动运行时日志
+.run/

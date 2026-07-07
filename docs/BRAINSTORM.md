@@ -110,6 +110,8 @@ erDiagram
 | `summary` + `finished` | 讨论收尾 | 自然语言 summary | 显示总结、停流 |
 | `error` | AI 调用失败 | `{message}` | 亮错误态 + 提示重试 |
 
+> 注:本表把 `summary` 与 `finished` 合为一行(收尾语境)故计 **6 种**;**最终实现将二者拆为两个独立事件、共 7 种**,以 `docs/API.md` §2 与 `docs/architecture.md` §6 为准。
+
 ### 三个经典坑的封堵
 - **断线续看**:重连 = 重新 REST 拉历史 + 重新 `snapshot`,**砍掉 Last-Event-ID 事件重放**与内存事件历史。前端用 `speech.seq` / `insight.created_at` 对"历史 + 实时"去重排序,消除"拉历史↔接流"竞态。
 - **保活**:`SseEmitter` 长超时 + 每 ~20s 发 `:ping` 注释心跳防代理掐连接。
