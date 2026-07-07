@@ -1,0 +1,185 @@
+/* ExpertStatusWindow —— design.md §3.3 专家状态小窗。
+   三态:待机 / 准备发言 / 发言中。像素资产纯 CSS(box-shadow/clip-path),零 PNG。
+   §4.5 无障碍红线:文本状态标签常显 + 发言中用静态实色边框,去动画后状态不丢失。 */
+
+.expert-window {
+  --speaker-color: var(--border); /* 默认色,tsx 会按 participant.color 覆盖 */
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  background: var(--bg-elevated);
+  /* 阶梯像素厚边(默认态用中性边框) */
+  border: 2px solid var(--border);
+  box-shadow: 0 0 0 2px var(--bg-stage);
+  font-family: var(--font-pixel);
+}
+
+/* ── 像素头像 / 指示器 ─────────────────────────── */
+.expert-avatar {
+  position: relative;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  background: var(--bg-stage);
+  /* 头像外框 = 专属色(§3.2) */
+  border: 2px solid var(--speaker-color);
+}
+
+.expert-eye {
+  position: absolute;
+  top: 7px;
+  width: 4px;
+  height: 4px;
+  background: var(--text-primary);
+}
+.expert-eye-l {
+  left: 5px;
+}
+.expert-eye-r {
+  right: 5px;
+}
+
+/* 像素嘴:默认闭合(细横条),发言中做开合动画 */
+.expert-mouth {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  width: 12px;
+  height: 4px;
+  transform: translateX(-50%);
+  background: var(--speaker-color);
+  transform-origin: center bottom;
+}
+
+/* ── 文本区 ───────────────────────────────────── */
+.expert-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0; /* 允许省略 */
+  flex: 1 1 auto;
+}
+
+.expert-headline {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.expert-name {
+  font-size: 12px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 状态文本标签:§4.5 关键——任何时刻都可见,不依赖动效 */
+.expert-status-label {
+  flex: 0 0 auto;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.expert-title {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 关注点 focus */
+.expert-focus {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  /* 两行截断 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── 像素声波(发言中)3–5 根,交错 delay ──────── */
+.expert-wave {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 14px;
+}
+
+.wave-bar {
+  width: 3px;
+  height: 4px;
+  background: var(--speaker-color);
+  /* §4.1:steps() 逐帧跳变,像素音柱 */
+  animation: pixel-wave 0.6s steps(3) infinite;
+}
+.wave-bar:nth-child(1) { animation-delay: 0s; }
+.wave-bar:nth-child(2) { animation-delay: 0.12s; }
+.wave-bar:nth-child(3) { animation-delay: 0.24s; }
+.wave-bar:nth-child(4) { animation-delay: 0.36s; }
+.wave-bar:nth-child(5) { animation-delay: 0.48s; }
+
+/* ── 三态 ─────────────────────────────────────── */
+
+/* 待机:轻微 idle bob;边框 --border;dim 化 */
+.expert-window.status-idle {
+  border-color: var(--border);
+  opacity: 0.75;
+}
+.expert-window.status-idle .expert-avatar {
+  border-color: var(--border);
+  animation: idle-bob 2s steps(2) infinite;
+}
+.expert-window.status-idle .expert-mouth {
+  background: var(--border-strong);
+}
+
+/* 准备发言:prepare-bounce;边框 = 专属色 */
+.expert-window.status-prepare {
+  border-color: var(--speaker-color);
+}
+.expert-window.status-prepare .expert-avatar {
+  animation: prepare-bounce 0.5s steps(2) infinite;
+}
+
+/* 发言中:嘴部动画 + 聚光灯 + 边框高亮(静态实色) */
+.expert-window.status-speaking {
+  border-color: var(--speaker-color);
+  /* 聚光灯:2px 描边 + 外辉光,慢呼吸(§4.1) */
+  box-shadow:
+    0 0 0 2px var(--speaker-color),
+    0 0 20px 2px var(--speaker-color);
+}
+.expert-window.status-speaking .expert-mouth {
+  /* 像素嘴两态开合(§4.2) */
+  animation: mouth-talk 0.3s steps(2) infinite;
+}
+
+/* isCurrentSpeaker:聚光灯强调(更强外辉光) */
+.expert-window.is-current {
+  border-color: var(--speaker-color);
+  box-shadow:
+    0 0 0 2px var(--speaker-color),
+    0 0 28px 4px var(--speaker-color);
+}
+
+/* ── §4.5 运动安全:去动画后状态仍靠静态样式区分 ──
+   全局 animations.css 已 animation:none;此处补足静态语义。 */
+@media (prefers-reduced-motion: reduce) {
+  /* 发言中:实色边框静态高亮(§4.5 示例) */
+  .expert-window.status-speaking,
+  .expert-window.is-current {
+    border-color: var(--speaker-color);
+  }
+  /* 声波静止在高位,作为静态「音量」指示 */
+  .expert-window.status-speaking .wave-bar {
+    height: 10px;
+  }
+}
