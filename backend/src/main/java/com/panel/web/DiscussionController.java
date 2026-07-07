@@ -2,6 +2,7 @@ package com.panel.web;
 
 import com.panel.entity.Discussion;
 import com.panel.service.DiscussionService;
+import com.panel.web.dto.ConfirmResponse;
 import com.panel.web.dto.CreateDiscussionReq;
 import com.panel.web.dto.DiscussionDetailDto;
 import com.panel.web.dto.RosterResponseDto;
@@ -34,6 +35,13 @@ public class DiscussionController {
     @PostMapping("/{id}/regenerate")
     public RosterResponseDto regenerate(@PathVariable long id) {
         return service.regenerate(id);
+    }
+
+    @PostMapping("/{id}/confirm")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public ConfirmResponse confirm(@PathVariable long id) {
+        service.confirm(id);
+        return new ConfirmResponse(id, "running");
     }
 
     @GetMapping("/{id}")

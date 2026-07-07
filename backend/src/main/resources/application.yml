@@ -12,6 +12,8 @@ spring:
     init:
       mode: always
       schema-locations: file:../db/schema.sql
+      # seed 用 INSERT OR IGNORE(固定 id),每次启动幂等自动灌:clone→配 key→run 即有 5 场样例
+      data-locations: file:../db/seed.sql
       # ponytail: 容忍 schema 里 PRAGMA 在事务中重设 WAL 的告警;CREATE 均 IF NOT EXISTS,幂等安全
       continue-on-error: true
 

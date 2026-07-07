@@ -5,6 +5,7 @@ import com.panel.entity.Discussion;
 import com.panel.entity.Insight;
 import com.panel.entity.Participant;
 import com.panel.entity.Speech;
+import com.panel.engine.EngineService;
 import com.panel.mapper.DiscussionMapper;
 import com.panel.mapper.InsightMapper;
 import com.panel.mapper.ParticipantMapper;
@@ -31,14 +32,29 @@ public class DiscussionService {
     private final SpeechMapper speechMapper;
     private final InsightMapper insightMapper;
     private final RosterService rosterService;
+    private final EngineService engineService;
 
     public DiscussionService(DiscussionMapper discussionMapper, ParticipantMapper participantMapper,
-                             SpeechMapper speechMapper, InsightMapper insightMapper, RosterService rosterService) {
+                             SpeechMapper speechMapper, InsightMapper insightMapper, RosterService rosterService,
+                             EngineService engineService) {
         this.discussionMapper = discussionMapper;
         this.participantMapper = participantMapper;
         this.speechMapper = speechMapper;
         this.insightMapper = insightMapper;
         this.rosterService = rosterService;
+        this.engineService = engineService;
+    }
+
+    // 确认阵容 → running(请求线程写,单写者交接点)→ 提交引擎循环(此后引擎线程独占写状态)
+    public void confirm(long id) {
+        Discussion d = require(id);
+        if (!"generating".equals(d.getStatus())) {
+            throw new InvalidStateException("只有生成中的讨论可确认进入演播厅");
+        }
+        discussionMapper.updateStatus(id, "running");
+        List<Participant> roster = participantMapper.selectList(
+                new QueryWrapper<Participant>().eq("discussion_id", id).orderByAsc("id"));
+        engineService.submit(id, roster);
     }
 
     public List<Discussion> list() {

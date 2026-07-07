@@ -3,19 +3,19 @@
 -- 显式 id 保证 participant_id / target_speech_id 引用确定。
 
 -- ========== 讨论 1:AI 是否会取代初级程序员? ==========
-INSERT INTO discussion (id, topic, status, expert_count, summary, created_at) VALUES
+INSERT OR IGNORE INTO discussion (id, topic, status, expert_count, summary, created_at) VALUES
 (1, 'AI 是否会取代初级程序员?', 'finished', 4,
  '本场没有落到"取代/不取代"的简单结论,而是收敛出更有价值的共识:AI 会吃掉重复性编码,但需求理解、系统设计与判断力仍是人的护城河。分歧集中在初级岗位是数量萎缩还是升级为"AI 协作者"。对个人的启示是把能力重心从"写代码"移向"定义问题与验收结果"。',
  '2026-07-01 10:00:00');
 
-INSERT INTO participant (id, discussion_id, role, name, profession, title, stance, color) VALUES
+INSERT OR IGNORE INTO participant (id, discussion_id, role, name, profession, title, stance, color) VALUES
 (1, 1, 'host',   '林知远', '科技媒体人',     '圆桌主持',   '中立引导',              '#6B7280'),
 (2, 1, 'expert', '陈默',   '软件架构师',     '首席架构师', '部分替代不可避免',      '#2563EB'),
 (3, 1, 'expert', '苏晴',   '计算机教育学者', '副教授',     '教育需转型而非消亡',    '#DB2777'),
 (4, 1, 'expert', '王砚',   'AI 创业者',      'CEO',        '工具增强而非取代',      '#16A34A'),
 (5, 1, 'expert', '赵磊',   '一线开发者',     '高级工程师', '低估了工程复杂性',      '#F59E0B');
 
-INSERT INTO speech (id, discussion_id, participant_id, content, reaction_type, target_speech_id, seq, created_at) VALUES
+INSERT OR IGNORE INTO speech (id, discussion_id, participant_id, content, reaction_type, target_speech_id, seq, created_at) VALUES
 (1, 1, 1, '今天聊一个焦虑话题:AI 会不会取代初级程序员?先请各位亮明立场。', '开场', NULL, 1, '2026-07-01 10:00:05'),
 (2, 1, 2, '重复性的 CRUD 和样板代码会被大量自动化,初级岗位的传统形态确实会萎缩。', '举手', NULL, 2, '2026-07-01 10:00:20'),
 (3, 1, 5, '可真实项目里八成难点是需求歧义和系统耦合,这些 AI 现在接不住。',       '反驳', 2,    3, '2026-07-01 10:00:38'),
@@ -24,24 +24,24 @@ INSERT INTO speech (id, discussion_id, participant_id, content, reaction_type, t
 (6, 1, 3, '教育必须从"教语法"转向"教判断与提问",否则培养的正是最易被替代的那批人。', '举手', NULL, 6, '2026-07-01 10:01:28'),
 (7, 1, 1, '感谢各位,我们把碰撞收在这里。',                                       '收尾', NULL, 7, '2026-07-01 10:01:45');
 
-INSERT INTO insight (id, discussion_id, type, content, created_at) VALUES
+INSERT OR IGNORE INTO insight (id, discussion_id, type, content, created_at) VALUES
 (1, 1, 'consensus',  '重复性、样板化的编码工作会被 AI 大幅自动化。',                     '2026-07-01 10:01:12'),
 (2, 1, 'divergence', '初级岗位走向"消失"还是"升级为 AI 协作者",各方判断不同。',        '2026-07-01 10:01:13');
 
 -- ========== 讨论 2:远程办公 vs 回归办公室,哪个是未来? ==========
-INSERT INTO discussion (id, topic, status, expert_count, summary, created_at) VALUES
+INSERT OR IGNORE INTO discussion (id, topic, status, expert_count, summary, created_at) VALUES
 (2, '远程办公 vs 回归办公室,哪个是未来?', 'finished', 4,
  '各方共识是"一刀切"最糟——无论强制到岗还是全面远程都会牺牲一部分人的产出。真正的分歧在于混合办公的重心该偏向灵活性还是协作密度。结论倾向于:以团队协作节奏而非管理者偏好来决定到岗规则。',
  '2026-07-02 14:00:00');
 
-INSERT INTO participant (id, discussion_id, role, name, profession, title, stance, color) VALUES
+INSERT OR IGNORE INTO participant (id, discussion_id, role, name, profession, title, stance, color) VALUES
 (6,  2, 'host',   '周衡',   '职场观察员',   '圆桌主持',   '中立引导',            '#6B7280'),
 (7,  2, 'expert', '何蓉',   '组织行为学者', '教授',       '协作密度不可替代',    '#7C3AED'),
 (8,  2, 'expert', '李维',   '远程公司创始人', 'CEO',      '远程是效率解放',      '#0891B2'),
 (9,  2, 'expert', '张岚',   'HR 负责人',    'HRD',        '混合办公是现实解',    '#DC2626'),
 (10, 2, 'expert', '吴迪',   '一线工程经理', '研发经理',   '看团队而非看口号',    '#65A30D');
 
-INSERT INTO speech (id, discussion_id, participant_id, content, reaction_type, target_speech_id, seq, created_at) VALUES
+INSERT OR IGNORE INTO speech (id, discussion_id, participant_id, content, reaction_type, target_speech_id, seq, created_at) VALUES
 (8,  2, 6, '远程还是回办公室,吵了好几年了。今天不喊口号,只谈什么情况下用什么。', '开场', NULL, 1, '2026-07-02 14:00:05'),
 (9,  2, 8, '远程把通勤和无效会议的时间还给了员工,深度工作反而更多。',           '举手', NULL, 2, '2026-07-02 14:00:22'),
 (10, 2, 7, '但创新常发生在走廊偶遇里,纯远程会悄悄杀死这种非正式协作。',         '反驳', 9,    3, '2026-07-02 14:00:40'),
@@ -49,78 +49,78 @@ INSERT INTO speech (id, discussion_id, participant_id, content, reaction_type, t
 (12, 2, 9, '所以混合不是妥协,是把到岗决定权交给团队协作节奏,而非管理者打卡偏好。', '举手', NULL, 5, '2026-07-02 14:01:16'),
 (13, 2, 6, '很好,分歧收敛到"谁来定到岗规则"上了,先收在这。',                   '收尾', NULL, 6, '2026-07-02 14:01:32');
 
-INSERT INTO insight (id, discussion_id, type, content, created_at) VALUES
+INSERT OR IGNORE INTO insight (id, discussion_id, type, content, created_at) VALUES
 (3, 2, 'consensus',  '"一刀切"的到岗政策会牺牲部分人的产出,是最差选项。',         '2026-07-02 14:01:18'),
 (4, 2, 'divergence', '混合办公的重心应偏向个人灵活性,还是团队协作密度。',           '2026-07-02 14:01:19');
 
 -- ========== 讨论 3:城市应不应该全面禁售燃油车? ==========
-INSERT INTO discussion (id, topic, status, expert_count, summary, created_at) VALUES
+INSERT OR IGNORE INTO discussion (id, topic, status, expert_count, summary, created_at) VALUES
 (3, '城市应不应该全面禁售燃油车?', 'finished', 4,
  '讨论共识是方向正确但节奏不能激进,电网、充电基建与低收入群体的承受力是硬约束。分歧在于"设定硬性禁售时间表"还是"用市场与配套自然淘汰"。落点建议是给出明确时间表但配套阶梯式补贴与基建先行。',
  '2026-07-03 09:30:00');
 
-INSERT INTO participant (id, discussion_id, role, name, profession, title, stance, color) VALUES
+INSERT OR IGNORE INTO participant (id, discussion_id, role, name, profession, title, stance, color) VALUES
 (11, 3, 'host',   '许明',   '公共政策评论员', '圆桌主持', '中立引导',          '#6B7280'),
 (12, 3, 'expert', '郑清',   '环境经济学家',   '研究员',   '禁售刻不容缓',      '#059669'),
 (13, 3, 'expert', '孙昊',   '汽车产业分析师', '首席分析师', '产业转型需缓冲',  '#2563EB'),
 (14, 3, 'expert', '马丽',   '电网工程师',     '高级工程师', '基建是前置条件',  '#EA580C'),
 (15, 3, 'expert', '冯涛',   '社会政策学者',   '副教授',   '警惕转嫁成本给穷人', '#BE185D');
 
-INSERT INTO speech (id, discussion_id, participant_id, content, reaction_type, target_speech_id, seq, created_at) VALUES
+INSERT OR IGNORE INTO speech (id, discussion_id, participant_id, content, reaction_type, target_speech_id, seq, created_at) VALUES
 (14, 3, 11, '全面禁售燃油车,是环保刚需还是操之过急?请各位直接给判断。',         '开场', NULL, 1, '2026-07-03 09:30:05'),
 (15, 3, 12, '交通是城市碳排大头,越晚禁售,气候账单越贵,方向上没得商量。',       '举手', NULL, 2, '2026-07-03 09:30:23'),
 (16, 3, 14, '方向我同意,但现有电网在高峰期扛不住大规模充电,基建不先行就是空谈。', '补充', NULL, 3, '2026-07-03 09:30:41'),
 (17, 3, 15, '而且一刀切禁售会让买不起新能源车的人承担转型成本,这不公平。',       '反驳', 15,   4, '2026-07-03 09:30:59'),
 (18, 3, 11, '所以大家不反对方向,分歧在节奏和配套。收在这里。',                   '收尾', NULL, 5, '2026-07-03 09:31:16');
 
-INSERT INTO insight (id, discussion_id, type, content, created_at) VALUES
+INSERT OR IGNORE INTO insight (id, discussion_id, type, content, created_at) VALUES
 (5, 3, 'consensus',  '减少燃油车是正确方向,但电网与充电基建是硬前置约束。',       '2026-07-03 09:31:02'),
 (6, 3, 'divergence', '应设硬性禁售时间表,还是靠市场与配套自然淘汰。',             '2026-07-03 09:31:03');
 
 -- ========== 讨论 4:短视频对青少年是利大于弊还是弊大于利? ==========
-INSERT INTO discussion (id, topic, status, expert_count, summary, created_at) VALUES
+INSERT OR IGNORE INTO discussion (id, topic, status, expert_count, summary, created_at) VALUES
 (4, '短视频对青少年是利大于弊还是弊大于利?', 'finished', 4,
  '各方一致认为问题不在"短视频"本身而在"推荐算法的成瘾设计"与"使用时长失控"。分歧在于治理责任主要落在平台、家庭还是学校。共识落点:平台需承担算法透明与防沉迷的首要责任,家庭与教育做补位。',
  '2026-07-04 16:00:00');
 
-INSERT INTO participant (id, discussion_id, role, name, profession, title, stance, color) VALUES
+INSERT OR IGNORE INTO participant (id, discussion_id, role, name, profession, title, stance, color) VALUES
 (16, 4, 'host',   '田甜',   '教育媒体人',   '圆桌主持',   '中立引导',        '#6B7280'),
 (17, 4, 'expert', '钱进',   '青少年心理学家', '主任医师', '成瘾风险被低估',  '#9333EA'),
 (18, 4, 'expert', '卢星',   '内容平台产品总监', '产品VP', '工具中性看使用',  '#0EA5E9'),
 (19, 4, 'expert', '邓宁',   '中学教师',     '班主任',     '注意力碎片化严重', '#DC2626'),
 (20, 4, 'expert', '韩雪',   '媒介素养研究者', '副教授',   '关键在教会使用',  '#16A34A');
 
-INSERT INTO speech (id, discussion_id, participant_id, content, reaction_type, target_speech_id, seq, created_at) VALUES
+INSERT OR IGNORE INTO speech (id, discussion_id, participant_id, content, reaction_type, target_speech_id, seq, created_at) VALUES
 (19, 4, 16, '短视频对青少年,到底是知识普惠还是注意力鸦片?请各位亮牌。',         '开场', NULL, 1, '2026-07-04 16:00:05'),
 (20, 4, 17, '真正危险的不是内容,是无限下滑的推荐机制,它是按成瘾原理设计的。',   '举手', NULL, 2, '2026-07-04 16:00:24'),
 (21, 4, 18, '算法能成瘾,也能高效推知识,工具本身中性,问题在使用方式。',         '反驳', 20,   3, '2026-07-04 16:00:42'),
 (22, 4, 20, '所以出路是媒介素养教育,教会孩子主动使用而不是被动刷。',             '补充', NULL, 4, '2026-07-04 16:01:00'),
 (23, 4, 16, '共识是骂算法不骂视频,分歧在谁来管。收在这。',                       '收尾', NULL, 5, '2026-07-04 16:01:18');
 
-INSERT INTO insight (id, discussion_id, type, content, created_at) VALUES
+INSERT OR IGNORE INTO insight (id, discussion_id, type, content, created_at) VALUES
 (7, 4, 'consensus',  '核心问题在推荐算法的成瘾设计与时长失控,而非短视频本身。',   '2026-07-04 16:01:03'),
 (8, 4, 'divergence', '治理责任主要应落在平台、家庭还是学校。',                     '2026-07-04 16:01:04');
 
 -- ========== 讨论 5:通用人工智能(AGI)会在十年内到来吗? ==========
-INSERT INTO discussion (id, topic, status, expert_count, summary, created_at) VALUES
+INSERT OR IGNORE INTO discussion (id, topic, status, expert_count, summary, created_at) VALUES
 (5, '通用人工智能(AGI)会在十年内到来吗?', 'finished', 4,
  '讨论没有对"十年"达成一致,但共识是当前范式在推理与持续学习上仍有根本缺口,单靠扩大规模不必然通向 AGI。分歧在于缺口是工程问题还是需要范式突破。理性落点:与其押注时间表,不如关注能力的可验证里程碑。',
  '2026-07-05 11:00:00');
 
-INSERT INTO participant (id, discussion_id, role, name, profession, title, stance, color) VALUES
+INSERT OR IGNORE INTO participant (id, discussion_id, role, name, profession, title, stance, color) VALUES
 (21, 5, 'host',   '罗盘',   '科技评论人',   '圆桌主持',   '中立引导',        '#6B7280'),
 (22, 5, 'expert', '叶航',   'AI 研究科学家', '研究总监',  '规模化将带来突破', '#2563EB'),
 (23, 5, 'expert', '秦岭',   '认知科学家',   '教授',       '缺持续学习能力',  '#DB2777'),
 (24, 5, 'expert', '龚宇',   'AI 安全学者',  '副教授',     '别用时间表误导',  '#D97706'),
 (25, 5, 'expert', '简凡',   '机器学习工程师', '资深工程师', '工程缺口可补齐',  '#0D9488');
 
-INSERT INTO speech (id, discussion_id, participant_id, content, reaction_type, target_speech_id, seq, created_at) VALUES
+INSERT OR IGNORE INTO speech (id, discussion_id, participant_id, content, reaction_type, target_speech_id, seq, created_at) VALUES
 (24, 5, 21, 'AGI 十年内到来——是可预期的拐点还是又一次乐观泡沫?请各位判断。',   '开场', NULL, 1, '2026-07-05 11:00:05'),
 (25, 5, 22, '过去几年每次扩大规模都解锁了没预料到的能力,外推下去十年很可能到。', '举手', NULL, 2, '2026-07-05 11:00:24'),
 (26, 5, 23, '但再大的模型也不会像人一样持续学习和形成因果理解,这是范式缺口。',   '反驳', 25,   3, '2026-07-05 11:00:43'),
 (27, 5, 24, '而且给出确定时间表本身就是误导,它会扭曲政策和投资判断。',           '补充', NULL, 4, '2026-07-05 11:01:01'),
 (28, 5, 21, '与其赌年份,不如盯可验证的能力里程碑。今天收在这。',                 '收尾', NULL, 5, '2026-07-05 11:01:19');
 
-INSERT INTO insight (id, discussion_id, type, content, created_at) VALUES
+INSERT OR IGNORE INTO insight (id, discussion_id, type, content, created_at) VALUES
 (9,  5, 'consensus',  '当前范式在推理与持续学习上存在根本缺口,单靠扩规模不必然通向 AGI。', '2026-07-05 11:01:05'),
 (10, 5, 'divergence', 'AGI 的缺口是可补齐的工程问题,还是需要范式级突破。',               '2026-07-05 11:01:06');

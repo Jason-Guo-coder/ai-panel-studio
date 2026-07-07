@@ -12,8 +12,9 @@ public abstract class WebIntegrationTest {
 
     @DynamicPropertySource
     static void dbProps(DynamicPropertyRegistry r) {
+        // shared-cache 内存库:多连接共享同一库;minimum-idle≥1 保持库存活,池>1 支持引擎并发写
         r.add("spring.datasource.url", () -> "jdbc:sqlite:file::memory:?cache=shared&foreign_keys=on");
-        r.add("spring.datasource.hikari.maximum-pool-size", () -> "1");
+        r.add("spring.datasource.hikari.maximum-pool-size", () -> "5");
         r.add("spring.datasource.hikari.minimum-idle", () -> "1");
         // 内存库不自动灌 seed,保测试确定性
         r.add("spring.sql.init.data-locations", () -> "");
