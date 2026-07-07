@@ -1,0 +1,117 @@
+/* InsightTicker —— design.md §3.5 共识/分歧像素 ticker。
+   LED 记分牌质感,纯 CSS 像素边框,零 PNG。语义色:共识绿 / 分歧橙(§1)。 */
+
+.insight-ticker {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 单栏:LED 板底 + 阶梯像素厚边(实心 border + 外描一圈舞台色) */
+.ticker-lane {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-panel);
+  border: 2px solid var(--border);
+  box-shadow: 0 0 0 2px var(--bg-stage);
+}
+
+/* 语义描边:共识绿 / 分歧橙 —— 颜色本身即状态,不依赖动效 */
+.lane-consensus {
+  border-color: var(--consensus);
+}
+.lane-divergence {
+  border-color: var(--divergence);
+}
+
+/* 栏头:图元 + 中文标签,像素字 */
+.lane-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  letter-spacing: 1px;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+.lane-consensus .lane-header {
+  color: var(--consensus);
+  border-bottom-color: var(--consensus);
+}
+.lane-divergence .lane-header {
+  color: var(--divergence);
+  border-bottom-color: var(--divergence);
+}
+
+/* 像素图元:方块底,模拟 LED 灯位 */
+.lane-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  font-size: 12px;
+  line-height: 1;
+  background: var(--bg-stage);
+  border: 1px solid currentColor;
+  border-radius: 0; /* 像素方角 */
+}
+
+.lane-label {
+  font-weight: normal;
+}
+
+/* 行容器:小块状记分行堆叠 */
+.lane-rows {
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* 记分行:每条一小格 LED 行,新条目从顶部滑入(§4 slide-in) */
+.lane-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 4px 6px;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  animation: slide-in 0.2s steps(3) both;
+}
+
+/* 行首像素图元,着语义色 */
+.row-glyph {
+  flex-shrink: 0;
+  width: 14px;
+  text-align: center;
+  line-height: 1.5;
+}
+.lane-consensus .row-glyph {
+  color: var(--consensus);
+}
+.lane-divergence .row-glyph {
+  color: var(--divergence);
+}
+
+.row-content {
+  flex: 1;
+  word-break: break-word;
+}
+
+/* 空态:暗色占位,不用正文色(§1 --text-dim 仅非正文) */
+.lane-empty {
+  padding: 8px 6px;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--text-dim);
+}
