@@ -6,7 +6,7 @@ import SpeechNameplate from '../components/SpeechNameplate'
 import InsightTicker from '../components/InsightTicker'
 import SummaryPanel from '../components/SummaryPanel'
 import PixelState from '../components/PixelState'
-import { useMockStream, type StreamPhase } from '../hooks/useMockStream'
+import { useDiscussionStream, type StreamPhase } from '../hooks/useDiscussionStream'
 import './StudioPage.css'
 
 const PILL: Record<StreamPhase, { text: string; cls: string }> = {
@@ -21,7 +21,7 @@ const PILL: Record<StreamPhase, { text: string; cls: string }> = {
 export default function StudioPage() {
   const navigate = useNavigate()
   const { id } = useParams()
-  const stream = useMockStream(id ? Number(id) : null)
+  const stream = useDiscussionStream(id ? Number(id) : null)
 
   const transcriptRef = useRef<HTMLDivElement>(null)
   // 新发言自动滚到底
