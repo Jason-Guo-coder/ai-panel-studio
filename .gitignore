@@ -5,9 +5,11 @@
 .env
 .env.*
 
-# 数据库文件(含 WAL/SHM 副本)
+# 数据库文件(含 WAL/SHM 副本);schema.sql/seed.sql 保留入库,运行时 .db 忽略
 data/*.db
 data/*.db-*
+db/*.db
+db/*.db-*
 
 # 构建产物 / 依赖
 node_modules/
