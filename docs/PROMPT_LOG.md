@@ -54,4 +54,45 @@
 
 ---
 
-*(后续 SDD / DDD / TDD / E2E 各阶段 Prompt 将续写于下方段落。)*
+---
+
+## 第 2 段 · 【SDD 阶段】数据建模与 API 契约生成
+
+**范式定位:** 契约/模型驱动。把引导阶段结论展开为交付级文档,**分步产出、不写实现代码**。
+
+**原始 Prompt 要点:**
+> 进入 SDD,产出交付级文档。不要压成一份内部设计稿,展开为:`docs/PRD.md`(定位/痛点/MVP 范围/页面清单/核心流程 mermaid flowchart/技术方案/风险带缓解)、`docs/architecture.md`(技术栈/目录结构/erDiagram 含 discussion_id 隔离字段/服务层/AI 编排/红线清单/验收标准)、`db/schema.sql` + `db/seed.sql`(≥5 条样例)+ `docs/API.md`(REST + SSE 事件契约)。技术栈按已定:React+Vite+TS / Spring Boot+MyBatis-Plus+SQLite / SSE。此步不写实现代码,分步来。
+
+**意图:** 用契约先钉死"字段名/状态枚举/事件类型",让后续前后端实现只填空、不发明,压制 AI 幻觉。
+
+**遇到的挑战与如何引导修正:**
+1. **mermaid 渲染坑**:PRD 核心流程 flowchart 节点用了 `\n` 换行,部分渲染器不认。引导:erDiagram 不动,只把 flowchart 节点 `\n` 全改 `<br/>`。
+2. **契约自相矛盾**:architecture §6 与 API §2 标题写"6 种事件",实际列了 7 行(`summary`、`finished` 是两个事件)。引导:两处统一改"7 种事件"(BRAINSTORM/PROMPT_LOG 的表把 summary+finished 合一行数,语境自洽,不动)。
+3. **措辞不准导致误读一致性**:声称专家色板"与 seed 对齐",实际只讨论 1 对上,讨论 2–5 用了色板外手选色。引导:改准措辞——8 色板仅用于**新讨论 P1 生成**(`expertIndex % 8`),`color` 是 participant 存储列按存值渲染,seed 历史用同色系手选色、不强制落在 8 色内(**不改 seed 数据**)。
+4. **补漏**:PRD 增补"核心用户旅程"(发起者/观察者双旅程),对齐打分项。
+5. 用 SQLite 临时库灌 schema+seed 跑 `PRAGMA foreign_key_check`,确认 5 讨论/25 参会者/28 发言/10 共识分歧、悬空反驳 0,契约层自检通过。
+
+---
+
+## 第 3 段 · 【DDD 阶段】前端组件与页面生成
+
+**范式定位:** 设计驱动。先 `design.md`(全像素风·圆桌像素演播厅)定视觉/交互基线,再脚手架 + 六组件 + 三页面,**全用 mock、不接后端**。
+
+**原始 Prompt 要点(设计基线):**
+> 视觉方向:全像素风·圆桌像素演播厅。先给章节提纲我确认再成文:主色调(深底+克制像素板+LIVE 红+专家专属色+可选 CRT 扫描线)、字体(Zpix vs Fusion Pixel 12,含可读性红线)、六组件 props/变体、关键交互(聚光灯/像素声波/三态动效/运动安全)、三态视觉(信号接入中/空台/雪花屏)、布局与三档响应式。
+
+**原始 Prompt 要点(实现):**
+> 用 subagent-driven-development,脚手架 frontend(React+Vite+TS),设计令牌落地(CSS variables + Fusion Pixel 本地 woff2),TS 类型对齐 API DTO 与 7 种 SSE payload,mock 数据仿 seed 集中管理便于替换;并行分派六组件,每个走 spec 合规审查→代码质量审查→commit;三页面(首页/嘉宾确认/演播厅);不引状态库,useState/Context 足够。
+
+**意图:** 让"演播厅沉浸感/实时感"先在纯前端跑起来可视验收;设计令牌与类型契约先行,组件叶子优先、页面组合在上,便于并行与替换真实接口。
+
+**遇到的挑战与如何引导修正:**
+1. **中文像素字体选型**:Zpix 更"硬"像素但 CJK 覆盖有限。引导:默认 **Fusion Pixel 12**(全 CJK,话题/人名不出豆腐块;OFL 可本地 woff2 内嵌),Zpix 作回退;summary 长文用清晰字体回退保可读。
+2. **断点数字不一致**:design.md §6 窄屏 ASCII 标 `<768px`,断点令牌却是 `<1024`。引导:统一 `<1024` 单栏,与 `--bp-desktop:1024` 一致。
+3. **演示态与真实 seed 的边界**:首页要出 🔴LIVE 进行中卡,但 seed 全是 finished。引导:在 **mock client 里加 `DEMO_STATUS`** 覆盖(disc1/2→running、disc5→interrupted),**不改 `mockData`/`db/seed.sql`**;真实后端接入后删 `DEMO_STATUS` 即可。
+4. **跨区块布局 bug(实测)**:演播厅主席台区内容超高,"准备发言"的紫色专家小窗**溢出渲染到下方绿色共识框**,重合。引导:先给 stage 区 `overflow:hidden` 裁剪→发现主持人卡片底部被硬切→再改为 **stage 整区滚动**(`overflow-y:auto`),卡片完整且不溢出到相邻区。
+5. **并行编排**:六组件独立叶子,用 subagent 并行分派,回收后统一 tsc/build + spec/质量双审查再逐个 commit,避免并发 build/git 竞态。
+
+---
+
+*(后续 TDD / E2E 阶段 Prompt 将续写于下方段落。)*
