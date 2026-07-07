@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.panel.ai.dto.*;
 import com.panel.entity.Participant;
 import com.panel.entity.Speech;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,7 +13,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 // AiService 的真实实现:P1/P2/P3 prompt 模板 + JSON 解析。解析失败一律抛 AiUpstreamException。
+// fake-ai profile 下停用,让确定性的 FakeAiService 顶上(E2E/集成零花费)。
 @Service
+@Profile("!fake-ai")
 public class DeepseekAiService implements AiService {
 
     private static final String P1_SYSTEM = """
