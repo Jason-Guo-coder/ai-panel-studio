@@ -56,6 +56,7 @@ public class DiscussionEngine {
         List<Speech> transcript = new ArrayList<>();
         int expertTurnsSinceHost = 0;
         int consecutiveDegraded = 0;
+        Long lastExpertSpeaker = null; // 用于把上一位发言专家复位为待机
 
         while (transcript.size() < maxSpeeches) {
             TurnContext ctx = new TurnContext(discussionId, transcript, roster, transcript.size(), expertTurnsSinceHost);
@@ -86,9 +87,18 @@ public class DiscussionEngine {
 
             Speech saved = persist(discussionId, turn, transcript.size() + 1);
             transcript.add(saved);
-            events.speech(discussionId, saved);
 
             boolean isHostTurn = isHost(turn.speakerId(), roster);
+            // 小窗状态广播:上一位专家复位待机,当前专家发言中(附加,snapshot 数据源)
+            if (lastExpertSpeaker != null && !lastExpertSpeaker.equals(turn.speakerId())) {
+                events.status(discussionId, lastExpertSpeaker, "待机", null);
+            }
+            if (!isHostTurn) {
+                events.status(discussionId, turn.speakerId(), "发言中", turn.focus());
+                lastExpertSpeaker = turn.speakerId();
+            }
+            events.speech(discussionId, saved);
+
             insightExtractor.extract(turn, isHostTurn, discussionId);
             expertTurnsSinceHost = isHostTurn ? 0 : expertTurnsSinceHost + 1;
         }
