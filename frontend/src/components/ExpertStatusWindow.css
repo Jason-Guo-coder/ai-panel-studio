@@ -152,8 +152,7 @@
 /* 发言中:嘴部动画 + 聚光灯 + 边框高亮(静态实色) */
 .expert-window.status-speaking {
   border-color: var(--speaker-color);
-  /* 聚光灯:2px 描边 + 外辉光;z-index 抬升,使上下光晕绘制在相邻卡片之上、不被遮挡 */
-  z-index: 2;
+  /* 聚光灯:2px 描边 + 外辉光(落在加大的间距/内边距空隙里,四面完整可见) */
   box-shadow:
     0 0 0 2px var(--speaker-color),
     0 0 20px 2px var(--speaker-color);
@@ -166,10 +165,9 @@
 /* isCurrentSpeaker:聚光灯强调(更强外辉光) */
 .expert-window.is-current {
   border-color: var(--speaker-color);
-  z-index: 3;
   box-shadow:
     0 0 0 2px var(--speaker-color),
-    0 0 28px 4px var(--speaker-color);
+    0 0 24px 3px var(--speaker-color);
 }
 
 /* ── §4.5 运动安全:去动画后状态仍靠静态样式区分 ──

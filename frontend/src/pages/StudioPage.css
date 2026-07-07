@@ -6,12 +6,13 @@
   display: grid;
   gap: 8px;
   padding: 8px;
-  /* 默认(窄屏 <1024)单栏纵向堆叠 */
+  /* 默认(窄屏 <1024)单栏纵向堆叠:主席台 / 发言人 / transcript / 共识分歧 / 总结 */
   grid-template-columns: 1fr;
-  grid-template-rows: auto auto minmax(0, 2fr) minmax(0, 1.2fr) minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1.4fr) minmax(0, 2fr) minmax(0, 1.2fr) minmax(0, 1fr);
   grid-template-areas:
     "header"
-    "stage"
+    "host"
+    "speakers"
     "transcript"
     "insights"
     "summary";
@@ -78,20 +79,21 @@
 .pill-warn { color: var(--divergence); }
 .pill-dim { color: var(--text-dim); }
 
-/* ── B 主席台 + 专家小窗 ── */
-/* stage 本身固定不滚(裁剪溢出);主席台固定,专家小窗在下方独立滚动 */
-.studio__stage { grid-area: stage; overflow: hidden; }
+/* ── 主席台(独立卡片,固定不滚)── */
+.studio__host { grid-area: host; }
 .studio__rostrum {
-  flex: 0 0 auto; /* 固定,不滚动 */
+  flex: 0 0 auto;
   padding: 10px;
-  border-bottom: 1px solid var(--border);
 }
+
+/* ── 发言人(独立卡片,内部专家小窗滚动)── */
+.studio__speakers { grid-area: speakers; }
 .studio__experts {
   flex: 1 1 auto;
-  min-height: 0; /* 允许在 stage 内收缩并独立滚动,不撑破本区 */
+  min-height: 0;
   display: flex;
-  gap: 16px;      /* 加大间距,给发言态光晕上下留出空间 */
-  padding: 14px;  /* 容器内边距,避免首尾卡片光晕被滚动区裁掉 */
+  gap: 28px;      /* 间距 ≥ 光晕半径:发言态光晕落在空隙里完整显示,不压到邻居 */
+  padding: 24px;  /* 内边距 ≥ 光晕半径:首尾卡片的光晕不被滚动区边缘裁掉 */
   /* 窄屏:专家小窗一行横向滚动 */
   overflow-x: auto;
   overflow-y: hidden;
@@ -128,14 +130,15 @@
 @media (min-width: 1024px) {
   .studio {
     grid-template-columns: 1.6fr 1fr;
-    grid-template-rows: auto 1fr 1fr 1fr;
+    grid-template-rows: auto auto 1fr 1fr 1fr;
     grid-template-areas:
-      "header    header"
-      "transcript stage"
+      "header     header"
+      "transcript host"
+      "transcript speakers"
       "transcript insights"
       "transcript summary";
   }
-  /* 桌面/超宽:专家小窗纵向排列并在区内独立滚动(主席台固定于上方) */
+  /* 桌面/超宽:专家小窗纵向排列并在区内独立滚动 */
   .studio__experts {
     flex-direction: column;
     overflow-x: hidden;
@@ -147,11 +150,12 @@
 /* ════════ 超宽 ≥1600:三栏 ════════ */
 @media (min-width: 1600px) {
   .studio {
-    grid-template-columns: 320px 1fr 360px;
-    grid-template-rows: auto 1fr 1fr;
+    grid-template-columns: 320px 1fr 340px;
+    grid-template-rows: auto auto 1fr 1fr;
     grid-template-areas:
-      "header header    header"
-      "stage  transcript insights"
-      "stage  transcript summary";
+      "header   header     header"
+      "host     transcript insights"
+      "speakers transcript insights"
+      "speakers transcript summary";
   }
 }

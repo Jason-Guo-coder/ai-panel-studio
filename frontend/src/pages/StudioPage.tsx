@@ -63,8 +63,9 @@ export default function StudioPage() {
         <h1 className="studio__topic" title={stream.topic}>{stream.topic}</h1>
       </header>
 
-      {/* B 主席台 + 专家小窗 */}
-      <section className="studio__stage region" aria-label="主席台与专家">
+      {/* 主席台(主持人,独立卡片) */}
+      <section className="studio__host region" aria-label="主席台">
+        <div className="region__title">主席台</div>
         <div className="studio__rostrum">
           {host && (
             <PixelAvatarCard
@@ -74,6 +75,11 @@ export default function StudioPage() {
             />
           )}
         </div>
+      </section>
+
+      {/* 发言人(专家小窗,独立卡片) */}
+      <section className="studio__speakers region" aria-label="发言人">
+        <div className="region__title">发言人</div>
         <div className="studio__experts scroll-area" ref={expertsRef}>
           {experts.map((e) => {
             const st = stream.expertStates[e.id]
