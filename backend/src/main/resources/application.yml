@@ -5,7 +5,7 @@ spring:
   datasource:
     driver-class-name: org.sqlite.JDBC
     # 每连接经 xerial URL 参数执行 WAL + foreign_keys(WAL 库级持久,foreign_keys 连接级)
-    url: jdbc:sqlite:${DB_PATH:../db/panel.db}?journal_mode=WAL&foreign_keys=on
+    url: jdbc:sqlite:${DB_PATH:../db/panel.db}?journal_mode=WAL&foreign_keys=on&busy_timeout=5000
     hikari:
       maximum-pool-size: 5
   sql:
