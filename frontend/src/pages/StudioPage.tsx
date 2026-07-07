@@ -30,6 +30,19 @@ export default function StudioPage() {
     if (el) el.scrollTop = el.scrollHeight
   }, [stream.speeches.length])
 
+  // 当前发言人自动居中到专家小窗滚动区(主持人在固定主席台,无需滚动)
+  const expertsRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const container = expertsRef.current
+    if (!container || stream.currentSpeakerId == null) return
+    const idx = stream.participants
+      .filter((p) => p.role === 'expert')
+      .findIndex((e) => e.id === stream.currentSpeakerId)
+    if (idx < 0) return
+    const el = container.children[idx] as HTMLElement | undefined
+    el?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
+  }, [stream.currentSpeakerId, stream.participants])
+
   // 全屏三态:接入中 / 错误
   if (stream.phase === 'connecting') {
     return <div className="studio studio--center"><PixelState kind="loading" message="📡 信号接入中…" /></div>
@@ -55,7 +68,7 @@ export default function StudioPage() {
         <div className="studio__rostrum">
           {host && <PixelAvatarCard participant={host} compact />}
         </div>
-        <div className="studio__experts scroll-area">
+        <div className="studio__experts scroll-area" ref={expertsRef}>
           {experts.map((e) => {
             const st = stream.expertStates[e.id]
             return (
