@@ -2,12 +2,26 @@
 // 后续替换真实后端:仅改本文件内实现(fetch / EventSource),页面不动。
 
 import type {
-  DiscussionSummary, DiscussionDetail, RosterResponse, Participant,
+  DiscussionSummary, DiscussionDetail, RosterResponse, Participant, DiscussionStatus,
 } from '../types/dto'
 import { mockDiscussions } from './mockData'
 
-// 运行时 store:以 mock 为初值;新建讨论追加于此,故首页/详情可见。
-const store: DiscussionDetail[] = mockDiscussions.map((d) => ({ ...d }))
+// 仅前端演示用的状态覆盖(不改 db/seed.sql、不改 mockData):
+// 让首页出现 🔴LIVE 进行中卡与「已中断」卡。interrupted 场清空 summary 保持语义一致。
+const DEMO_STATUS: Record<number, DiscussionStatus> = { 1: 'running', 2: 'running', 5: 'interrupted' }
+
+// 运行时 store:以 mock 为初值(discussion 深拷贝,避免 confirm/regenerate 回写 mockData);新建讨论追加于此。
+const store: DiscussionDetail[] = mockDiscussions.map((d) => {
+  const override = DEMO_STATUS[d.discussion.id]
+  return {
+    ...d,
+    discussion: {
+      ...d.discussion,
+      status: override ?? d.discussion.status,
+      summary: override === 'interrupted' ? null : d.discussion.summary,
+    },
+  }
+})
 
 const delay = (ms = 220) => new Promise((r) => setTimeout(r, ms))
 

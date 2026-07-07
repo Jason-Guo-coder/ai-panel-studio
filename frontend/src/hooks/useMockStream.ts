@@ -10,7 +10,7 @@ export interface ExpertLiveState {
   focus: string | null
 }
 
-export type StreamPhase = 'connecting' | 'live' | 'finished' | 'empty' | 'error'
+export type StreamPhase = 'connecting' | 'live' | 'finished' | 'empty' | 'interrupted' | 'error'
 
 export interface MockStream {
   phase: StreamPhase
@@ -46,6 +46,16 @@ export function useMockStream(id: number | null, stepMs = 1600): MockStream {
 
       const speeches = [...detail.speeches].sort((a, b) => a.seq - b.seq)
       const insights = [...detail.insights].sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1))
+      const isFinishedStatus = discussion.status === 'finished'
+
+      // 已中断:不回放,直接静态展示全部历史 + interrupted 相位(架构:历史可看、无实时)
+      if (discussion.status === 'interrupted') {
+        setState({
+          phase: 'interrupted', topic: discussion.topic, participants,
+          speeches, insights, expertStates: baseStates, currentSpeakerId: null, summary: null,
+        })
+        return
+      }
 
       // 无发言(新建讨论 roster-only)→ 空台等待开场
       if (speeches.length === 0) {
@@ -90,17 +100,18 @@ export function useMockStream(id: number | null, stepMs = 1600): MockStream {
             states[np.id] = { status: '准备发言', focus: np.stance }
           }
         }
-        const finished = i >= speeches.length
+        const done = i >= speeches.length
+        // running:回放追平后保持 live(不出 summary);finished:收尾出 summary。
         setState({
-          phase: finished ? 'finished' : 'live',
+          phase: done ? (isFinishedStatus ? 'finished' : 'live') : 'live',
           topic: discussion.topic, participants,
           expertStates: { ...states },
           speeches: [...shownSpeeches],
           insights: [...shownInsights],
           currentSpeakerId: s.participantId,
-          summary: finished ? discussion.summary : null,
+          summary: done && isFinishedStatus ? discussion.summary : null,
         })
-        if (finished && timer) clearInterval(timer)
+        if (done && timer) clearInterval(timer)
       }
 
       timer = window.setInterval(tick, stepMs)
