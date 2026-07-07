@@ -105,28 +105,25 @@
   border-color: var(--border);
 }
 
-/* 删除按钮(右上角,默认淡出,悬停/聚焦卡片时显现) */
+/* 删除按钮(右下角,避开右上角 LIVE;像素风,常显,悬停变红) */
 .discussion-del {
   position: absolute;
-  top: 8px;
+  bottom: 8px;
   right: 8px;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   padding: 0;
+  font-family: var(--font-pixel);
   font-size: 12px;
   line-height: 1;
   color: var(--text-dim);
   background: var(--bg-stage);
-  border: 1px solid var(--border);
-  opacity: 0;
-  transition: opacity 0.12s;
+  border: 2px solid var(--border);
+  box-shadow: 0 0 0 1px var(--bg-stage);
+  transition: color 0.12s, border-color 0.12s;
 }
-.discussion-card:hover .discussion-del,
-.discussion-card:focus-visible .discussion-del,
+.discussion-del:hover,
 .discussion-del:focus-visible {
-  opacity: 1;
-}
-.discussion-del:hover {
   color: var(--live-red);
   border-color: var(--live-red);
 }

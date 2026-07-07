@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DiscussionCard from '../components/DiscussionCard'
 import PixelState from '../components/PixelState'
+import ConfirmModal from '../components/ConfirmModal'
 import { getDiscussions, deleteDiscussion } from '../api/client'
 import type { DiscussionSummary } from '../types/dto'
 import './HomePage.css'
@@ -10,6 +11,7 @@ export default function HomePage() {
   const navigate = useNavigate()
   const [items, setItems] = useState<DiscussionSummary[]>([])
   const [phase, setPhase] = useState<'loading' | 'ready' | 'error'>('loading')
+  const [pendingDelete, setPendingDelete] = useState<number | null>(null)
 
   const load = useCallback(() => {
     setPhase('loading')
@@ -24,9 +26,11 @@ export default function HomePage() {
 
   useEffect(() => { load() }, [load])
 
-  const handleDelete = (id: number) => {
-    if (!window.confirm('确定删除该讨论?此操作不可恢复。')) return
-    deleteDiscussion(id).then(load).catch(() => window.alert('删除失败,请重试'))
+  const confirmDelete = () => {
+    const id = pendingDelete
+    setPendingDelete(null)
+    if (id == null) return
+    deleteDiscussion(id).then(load).catch(load)
   }
 
   return (
@@ -57,12 +61,20 @@ export default function HomePage() {
                 expertCount={d.expertCount}
                 createdAt={d.createdAt}
                 onEnter={() => navigate(`/discussions/${d.id}`)}
-                onDelete={() => handleDelete(d.id)}
+                onDelete={() => setPendingDelete(d.id)}
               />
             ))}
           </div>
         )}
       </main>
+
+      {pendingDelete != null && (
+        <ConfirmModal
+          message="确定删除该讨论?此操作不可恢复。"
+          onConfirm={confirmDelete}
+          onCancel={() => setPendingDelete(null)}
+        />
+      )}
     </div>
   )
 }
