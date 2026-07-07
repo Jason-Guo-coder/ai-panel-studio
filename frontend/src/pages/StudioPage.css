@@ -79,8 +79,8 @@
 .pill-dim { color: var(--text-dim); }
 
 /* ── B 主席台 + 专家小窗 ── */
-/* overflow:hidden 关键:裁剪本区,防止专家小窗溢出渲染到下方共识/分歧区(重合 bug) */
-.studio__stage { grid-area: stage; overflow: hidden; }
+/* 整区滚动:既防止内容溢出到相邻共识/分歧区(重合 bug),又保证主席台卡片完整可见(需要时区内滚动) */
+.studio__stage { grid-area: stage; overflow-y: auto; overflow-x: hidden; }
 .studio__rostrum {
   flex: 0 0 auto;
   display: flex;
@@ -147,11 +147,10 @@
       "transcript insights"
       "transcript summary";
   }
-  /* 桌面/超宽:专家小窗改纵向排列滚动 */
+  /* 桌面/超宽:专家小窗改纵向排列,随 stage 整区一起滚动(不各自再滚,避免嵌套滚动裁掉卡片) */
   .studio__experts {
     flex-direction: column;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: visible;
   }
   .studio__experts > * { flex: 0 0 auto; }
 }
