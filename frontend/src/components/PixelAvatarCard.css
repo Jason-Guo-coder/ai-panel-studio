@@ -1,0 +1,241 @@
+/* PixelAvatarCard —— 圆桌像素演播厅 · 嘉宾/主持人像素头像卡(design.md §3.2)
+   像素资产全 CSS(div + box-shadow / clip-path),零 PNG。 */
+
+.avatar-card {
+  --frame: var(--host-color); /* 由内联样式在专家变体覆盖为 participant.color */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 132px;
+  padding: 14px 12px 12px;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border);
+  box-sizing: border-box;
+  font-family: var(--font-pixel);
+  /* 像素硬边:关闭抗锯齿圆角感 */
+  image-rendering: pixelated;
+}
+
+/* ── 像素头像画布(方形网格底) ── */
+.avatar-canvas {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  /* 头像外框 = 专属色(专家)/ 中性灰(主持人) */
+  border: 3px solid var(--frame);
+  background: var(--bg-panel);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* 头部:方形像素头(肤色由内联变量 --skin 提供) */
+.pixel-head {
+  position: absolute;
+  left: 18px;
+  top: 20px;
+  width: 36px;
+  height: 34px;
+  background: var(--skin, #e8b98c);
+}
+
+/* 头发块(发色/发型由修饰类与内联 --hair 控制) */
+.pixel-hair {
+  position: absolute;
+  left: 16px;
+  top: 12px;
+  width: 40px;
+  height: 14px;
+  background: var(--hair, #3a2a1a);
+}
+/* 发型 A:齐刘海(默认,矩形) */
+/* 发型 B:中分,用两侧鬓角下探 */
+.pixel-hair.style-b::before,
+.pixel-hair.style-b::after {
+  content: '';
+  position: absolute;
+  top: 14px;
+  width: 6px;
+  height: 12px;
+  background: var(--hair, #3a2a1a);
+}
+.pixel-hair.style-b::before { left: 0; }
+.pixel-hair.style-b::after { right: 0; }
+/* 发型 C:尖顶(clip-path 像素三角) */
+.pixel-hair.style-c {
+  clip-path: polygon(0 100%, 0 30%, 25% 30%, 25% 0, 50% 0, 50% 30%, 75% 30%, 75% 0, 100% 0, 100% 100%);
+}
+
+/* 眼睛(两颗像素方点) */
+.pixel-eye {
+  position: absolute;
+  top: 34px;
+  width: 4px;
+  height: 4px;
+  background: #1b1b1b;
+}
+.pixel-eye.left { left: 26px; }
+.pixel-eye.right { left: 42px; }
+
+/* 眼镜(有/无由 hash 决定):镜框 + 鼻梁,box-shadow 拼像素 */
+.pixel-glasses {
+  position: absolute;
+  left: 24px;
+  top: 32px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid #23324a;
+  background: transparent;
+  box-sizing: border-box;
+  /* 右镜片 + 中间鼻梁 */
+  box-shadow:
+    14px 0 0 0 transparent,
+    0 0 0 0 transparent;
+}
+.pixel-glasses::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: -2px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid #23324a;
+  box-sizing: border-box;
+}
+.pixel-glasses::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 1px;
+  width: 6px;
+  height: 2px;
+  background: #23324a;
+}
+
+/* 嘴(静态像素条) */
+.pixel-mouth {
+  position: absolute;
+  left: 32px;
+  top: 46px;
+  width: 10px;
+  height: 3px;
+  background: #9c5a4a;
+}
+
+/* 西装肩 + 翻领 + 衬领(底部) */
+.pixel-suit {
+  position: absolute;
+  left: 8px;
+  bottom: 0;
+  width: 56px;
+  height: 18px;
+  background: #232a38;
+}
+/* 衬领(白色 V) */
+.pixel-collar {
+  position: absolute;
+  left: 30px;
+  bottom: 0;
+  width: 12px;
+  height: 12px;
+  background: #e6edf3;
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+}
+/* 领带 / 领结用专属色点睛(专家),主持人变体覆盖为中性灰 */
+.pixel-tie {
+  position: absolute;
+  left: 33px;
+  bottom: 0;
+  width: 6px;
+  height: 9px;
+  background: var(--frame);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+/* 翻领(西装 V 形开口,深于西装一档) */
+.pixel-lapel-l,
+.pixel-lapel-r {
+  position: absolute;
+  bottom: 0;
+  width: 14px;
+  height: 18px;
+  background: #171d28;
+}
+.pixel-lapel-l { left: 8px; clip-path: polygon(0 0, 100% 100%, 0 100%); }
+.pixel-lapel-r { right: 8px; clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+
+/* ── 名条 ── */
+.avatar-name {
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.2;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.avatar-meta {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.3;
+  text-align: center;
+  max-width: 100%;
+}
+.avatar-stance {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+  max-width: 100%;
+  border-top: 1px dashed var(--border-strong);
+  padding-top: 6px;
+  margin-top: 2px;
+}
+
+/* 底部专属色块名条(专家) */
+.avatar-colorbar {
+  width: 100%;
+  height: 4px;
+  background: var(--frame);
+}
+
+/* ══════════ 主持人变体(与专家区隔:更宽 / 中性灰 / 主席台质感) ══════════ */
+.avatar-card.is-host {
+  width: 168px;
+  padding: 18px 16px 14px;
+  border-color: var(--host-color);
+  border-width: 3px;
+  /* 主席台质感:略抬升 + 中性描边光 */
+  box-shadow: 0 0 0 2px var(--bg-stage), 0 0 0 4px var(--host-color);
+}
+.avatar-card.is-host .avatar-canvas {
+  width: 84px;
+  height: 84px;
+  border-color: var(--host-color);
+}
+/* 像素皇冠(主席台线索,置于头像画布顶部) */
+.host-crown {
+  position: relative;
+  width: 34px;
+  height: 12px;
+  margin-bottom: 2px;
+  background: var(--host-color);
+  clip-path: polygon(
+    0 100%, 0 40%, 16% 0, 33% 40%, 50% 0, 67% 40%, 84% 0, 100% 40%, 100% 100%
+  );
+}
+/* “主持”像素徽标 */
+.host-badge {
+  display: inline-block;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--text-primary);
+  background: var(--host-color);
+  border: 2px solid var(--border-strong);
+  padding: 2px 8px;
+  letter-spacing: 2px;
+}
+.avatar-card.is-host .avatar-name {
+  font-size: 14px;
+}
