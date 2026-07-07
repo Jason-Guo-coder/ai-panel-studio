@@ -1,0 +1,106 @@
+/* DiscussionCard —— design.md §3.1 讨论卡。像素资产纯 CSS(box-shadow 阶梯边框),零 PNG。 */
+
+.discussion-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: var(--bg-elevated);
+  /* 阶梯像素边框:实心 border + 外描一圈,营造像素块厚边 */
+  border: 2px solid var(--border);
+  box-shadow: 0 0 0 2px var(--bg-stage);
+  cursor: pointer;
+  transition: transform 0.12s steps(2), border-color 0.12s;
+  outline: none;
+}
+
+/* hover / focus:轻微上浮反馈 */
+.discussion-card:hover,
+.discussion-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--border-strong);
+}
+
+.discussion-card:focus-visible {
+  box-shadow: 0 0 0 2px var(--bg-stage), 0 0 0 4px var(--border-strong);
+}
+
+/* running → 卡片边框强调 */
+.discussion-card.status-running {
+  border-color: var(--border-strong);
+}
+
+/* 话题:像素字 + 单行省略 */
+.discussion-topic {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 次要信息:人数 + 时间 */
+.discussion-meta {
+  display: flex;
+  gap: 12px;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* 右上角 🔴LIVE 徽标 */
+.live-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--live-red);
+  border: 1px solid var(--live-red);
+  background: var(--bg-stage);
+  box-shadow: 0 0 6px var(--live-glow);
+  animation: live-blink 1s steps(2) infinite;
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--live-red);
+  border-radius: 0; /* 像素方点 */
+}
+
+/* 状态文字标签(非动画,信息不只靠动效) */
+.status-tag {
+  align-self: flex-start;
+  padding: 2px 6px;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  border: 1px solid var(--border);
+}
+
+/* finished → 灰色低饱和 */
+.status-tag-finished {
+  color: var(--text-secondary);
+  border-color: var(--border-strong);
+  filter: saturate(0.6);
+}
+
+/* interrupted → text-dim */
+.status-tag-interrupted {
+  color: var(--text-dim);
+  border-color: var(--text-dim);
+}
+
+/* generating → 生成中 */
+.status-tag-generating {
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
