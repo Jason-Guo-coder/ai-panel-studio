@@ -1,0 +1,113 @@
+/* 嘉宾生成确认页 —— header 固定,内容区独立滚动。 */
+
+.newd {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.newd__header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 24px;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg-panel);
+}
+.newd__back {
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+}
+.newd__back:hover { color: var(--text-primary); border-color: var(--border-strong); }
+.newd__title {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: 18px;
+  color: var(--text-primary);
+}
+
+.newd__body { padding: 24px; }
+
+/* 表单 */
+.newd__form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+  max-width: 860px;
+  margin-bottom: 28px;
+}
+.newd__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 320px;
+}
+.newd__field--count { flex: 0 0 120px; }
+.newd__label {
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.newd__input {
+  font-family: var(--font-readable);
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border: 2px solid var(--border);
+  padding: 10px;
+}
+.newd__input:focus { outline: none; border-color: var(--border-strong); }
+
+.newd__gen {
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-strong);
+  padding: 10px 16px;
+}
+.newd__gen:disabled { opacity: 0.45; cursor: not-allowed; }
+.newd__gen:not(:disabled):hover { border-color: var(--live-red); color: var(--live-red); }
+
+/* 阵容结果 */
+.newd__rostrum {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.newd__experts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
+.newd__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 28px;
+}
+.newd__secondary {
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 2px solid var(--border);
+  padding: 10px 16px;
+}
+.newd__secondary:hover { color: var(--text-primary); border-color: var(--border-strong); }
+.newd__confirm {
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  color: var(--bg-stage);
+  background: var(--consensus);
+  border: 2px solid var(--consensus);
+  padding: 10px 18px;
+}
+.newd__confirm:disabled { opacity: 0.5; cursor: not-allowed; }
