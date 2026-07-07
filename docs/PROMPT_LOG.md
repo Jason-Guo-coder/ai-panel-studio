@@ -131,5 +131,5 @@
 2. **测试隔离**:集成库初用 `:memory:?cache=shared`,`journal_mode=memory`(非 WAL)导致读阻塞写、上下文关闭时内存库被销毁 → 引擎线程写超时/失败。换成 `target` 文件库 + WAL(读不阻塞写、不销毁)。
 3. **SSE 测试方式**:MockMvc 对 `SseEmitter` 的 `getAsyncResult/asyncDispatch` 不适用("async result not set")。改用真 HTTP(A8 读首个事件=snapshot)+ 直接 hub(A9 经广播失败清理路径)。
 4. **E2E 预算策略**:`@Profile("fake-ai")` 的 `FakeAiService` 确定性产出合法 P1/P2/P3;`DeepseekAiService` 加 `@Profile("!fake-ai")` 避免双 bean。错误态用 `__FAIL__` 话题钩子确定性触发。E2E 零花费、可重复。
-5. **v4-pro 推理模型成本/延迟**:真实冒烟一场 6 轮讨论 = 7 次调用、prompt 2179 + completion 2386(含 reasoning 1723)tokens ≈ ¥0.05、约 57s。给 DeepseekClient 加 usage 日志(分列 prompt/completion/reasoning)+ 180s 读超时;只取 `message.content`,不读 `reasoning_content`(CoT 不泄漏)。详见 `docs/SMOKE.md`。
+5. **v4-pro 推理模型成本/延迟**:真实冒烟一场 6 轮讨论 = 7 次调用、prompt 2179 + completion 2386(含 reasoning 1723)tokens ≈ ¥0.05、约 57s。给 DeepseekClient 加 usage 日志(分列 prompt/completion/reasoning)+ 180s 读超时;只取 `message.content`,不读 `reasoning_content`(CoT 不泄漏)。详见 `docs/WORKFLOW.md` 附一。
 

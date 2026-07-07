@@ -113,7 +113,7 @@ npm run dev                       # http://localhost:5173
 
 ## 目录
 ```
-docs/     PRD / architecture / API / design / BRAINSTORM / PROMPT_LOG / WORKFLOW / SMOKE
+docs/     PRD / architecture / API / design / BRAINSTORM / PROMPT_LOG / WORKFLOW
 db/       schema.sql(建表)+ seed.sql(≥5 样例,幂等)
 backend/  Spring Boot(controller/service/engine/sse/ai/mapper/entity)+ 测试
 frontend/ React+Vite+TS(pages/components/hooks/api/types/styles)+ e2e(Playwright)
