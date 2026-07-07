@@ -79,24 +79,12 @@
 .pill-dim { color: var(--text-dim); }
 
 /* ── B 主席台 + 专家小窗 ── */
-/* 整区滚动:既防止内容溢出到相邻共识/分歧区(重合 bug),又保证主席台卡片完整可见(需要时区内滚动) */
-.studio__stage { grid-area: stage; overflow-y: auto; overflow-x: hidden; }
+/* stage 本身固定不滚(裁剪溢出);主席台固定,专家小窗在下方独立滚动 */
+.studio__stage { grid-area: stage; overflow: hidden; }
 .studio__rostrum {
-  flex: 0 0 auto;
-  display: flex;
-  justify-content: center;
+  flex: 0 0 auto; /* 固定,不滚动 */
   padding: 10px;
   border-bottom: 1px solid var(--border);
-}
-/* 演播厅内压缩主席台卡片,给专家小窗留出可视空间 */
-.studio__rostrum .avatar-card.is-host {
-  width: 132px;
-  padding: 10px 12px;
-  gap: 6px;
-}
-.studio__rostrum .avatar-card.is-host .avatar-canvas {
-  width: 60px;
-  height: 60px;
 }
 .studio__experts {
   flex: 1 1 auto;
@@ -147,10 +135,11 @@
       "transcript insights"
       "transcript summary";
   }
-  /* 桌面/超宽:专家小窗改纵向排列,随 stage 整区一起滚动(不各自再滚,避免嵌套滚动裁掉卡片) */
+  /* 桌面/超宽:专家小窗纵向排列并在区内独立滚动(主席台固定于上方) */
   .studio__experts {
     flex-direction: column;
-    overflow: visible;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
   .studio__experts > * { flex: 0 0 auto; }
 }

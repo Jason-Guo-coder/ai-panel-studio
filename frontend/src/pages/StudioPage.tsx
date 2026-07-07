@@ -53,7 +53,7 @@ export default function StudioPage() {
       {/* B 主席台 + 专家小窗 */}
       <section className="studio__stage region" aria-label="主席台与专家">
         <div className="studio__rostrum">
-          {host && <PixelAvatarCard participant={host} />}
+          {host && <PixelAvatarCard participant={host} compact />}
         </div>
         <div className="studio__experts scroll-area">
           {experts.map((e) => {

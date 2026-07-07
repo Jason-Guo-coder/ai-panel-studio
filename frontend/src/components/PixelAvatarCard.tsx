@@ -4,6 +4,7 @@ import './PixelAvatarCard.css'
 
 interface Props {
   participant: Participant
+  compact?: boolean // 主持人横向紧凑变体(演播厅主席台用)
 }
 
 // 由 participant.id 派生稳定 hash,保证同一人特征恒定、不同人相异。
@@ -60,12 +61,30 @@ function PixelHead({ features }: { features: Features }) {
   )
 }
 
-export default function PixelAvatarCard({ participant }: Props) {
+export default function PixelAvatarCard({ participant, compact = false }: Props) {
   const { role, name, profession, title, stance, color } = participant
   const features = deriveFeatures(participant.id)
 
   if (role === 'host') {
-    // 主持人变体:中性灰 + 主席台皇冠 + “主持”徽标,视觉高专家一档,不与专家混排。
+    if (compact) {
+      // 演播厅主席台:横向紧凑条,仍中性灰 + “主持”徽标 + 主席台描边,明显区别于专家。
+      return (
+        <div className="avatar-card is-host compact" aria-label={`主持人 ${name}`}>
+          <div className="host-avatar-wrap">
+            <div className="host-crown" aria-hidden="true" />
+            <PixelHead features={features} />
+          </div>
+          <div className="avatar-info">
+            <div className="avatar-headline">
+              <span className="host-badge">主持</span>
+              <span className="avatar-name" title={name}>{name}</span>
+            </div>
+            <span className="avatar-meta">{profession}·{title}</span>
+          </div>
+        </div>
+      )
+    }
+    // 完整变体(嘉宾确认页):中性灰 + 主席台皇冠 + “主持”徽标,竖排大卡。
     return (
       <div className="avatar-card is-host" aria-label={`主持人 ${name}`}>
         <div className="host-crown" aria-hidden="true" />

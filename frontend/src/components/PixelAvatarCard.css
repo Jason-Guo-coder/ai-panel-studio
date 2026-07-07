@@ -239,3 +239,51 @@
 .avatar-card.is-host .avatar-name {
   font-size: 14px;
 }
+
+/* ══════════ 主持人横向紧凑变体(演播厅主席台:横条、占位小、明显区别专家)══════════ */
+.avatar-card.is-host.compact {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  border-width: 2px;
+  border-color: var(--host-color);
+  /* 主席台描边:与专家小窗一眼区分 */
+  box-shadow: 0 0 0 2px var(--bg-stage), 0 0 0 3px var(--host-color);
+}
+/* 王冠 + 头像竖排小组(头像保持原生 72px,西装/王冠不被裁切),整体作为横条左侧一项 */
+.avatar-card.is-host.compact .host-avatar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 0 0 auto;
+}
+.avatar-card.is-host.compact .avatar-canvas {
+  border-color: var(--host-color);
+}
+.avatar-card.is-host.compact .avatar-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.avatar-card.is-host.compact .avatar-headline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.avatar-card.is-host.compact .host-badge {
+  padding: 1px 6px;
+  letter-spacing: 1px;
+  border-width: 1px;
+}
+.avatar-card.is-host.compact .avatar-name {
+  font-size: 14px;
+  text-align: left;
+}
+.avatar-card.is-host.compact .avatar-meta {
+  text-align: left;
+}
