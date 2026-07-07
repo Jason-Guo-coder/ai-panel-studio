@@ -1,0 +1,74 @@
+/* PixelState —— §5 三态视觉(像素/CRT 隐喻)。纯 CSS,零 PNG。 */
+
+.pixel-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  height: 100%;
+  min-height: 160px;
+  padding: 24px;
+  text-align: center;
+  font-family: var(--font-pixel);
+}
+
+.pixel-state__msg {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* ── 加载:转圈砖块(4 帧 steps) ── */
+.pixel-state__spinner {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  animation: brick-spin 0.8s steps(4, end) infinite;
+}
+.pixel-state__spinner span {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--text-secondary);
+}
+.pixel-state__spinner span:nth-child(1) { top: 0; left: 0; }
+.pixel-state__spinner span:nth-child(2) { top: 0; right: 0; background: var(--border-strong); }
+.pixel-state__spinner span:nth-child(3) { bottom: 0; right: 0; }
+.pixel-state__spinner span:nth-child(4) { bottom: 0; left: 0; background: var(--border-strong); }
+
+/* ── 空数据:像素"演播厅空台"线框 ── */
+.pixel-state__stage {
+  width: 96px;
+  height: 52px;
+  border: 3px solid var(--border);
+  box-shadow: 0 0 0 3px var(--bg-stage), inset 0 -10px 0 -6px var(--border-strong);
+  background:
+    repeating-linear-gradient(90deg, transparent 0 10px, rgba(255, 255, 255, 0.03) 10px 11px);
+}
+
+/* ── 错误:雪花屏 + 抖动 ── */
+.pixel-state__snow {
+  width: 120px;
+  height: 64px;
+  border: 2px solid var(--border-strong);
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.06) 0 2px, transparent 2px 4px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 3px, transparent 3px 5px),
+    var(--bg-stage);
+  animation: live-blink 0.25s steps(2) infinite;
+}
+
+.pixel-state__retry {
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-strong);
+  padding: 6px 14px;
+}
+.pixel-state__retry:hover {
+  border-color: var(--live-red);
+  color: var(--live-red);
+}
