@@ -1,0 +1,66 @@
+/* design.md §3.4 发言像素名条(Transcript 行) */
+
+.speech-nameplate {
+  display: flex;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  /* §4.4 新发言滚动进入(mount) */
+  animation: slide-in 0.25s ease-out;
+}
+
+/* 主持人行:轻微区隔(§3.4),不与专家色混淆 */
+.speech-nameplate--host {
+  background: var(--bg-elevated);
+}
+
+/* 左侧像素色块 = 发言人色 / 主持人中性灰 */
+.speech-nameplate__block {
+  flex: 0 0 auto;
+  width: 5px;
+  align-self: stretch;
+}
+
+.speech-nameplate__body {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.speech-nameplate__meta {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 4px;
+  font-family: var(--font-pixel);
+  line-height: 1.4;
+}
+
+/* "主持"小标(§3.4 微区隔),中性灰、非专家色 */
+.speech-nameplate__tag {
+  flex: 0 0 auto;
+  padding: 1px 5px;
+  font-size: 11px;
+  color: var(--text-primary);
+  background: var(--host-color);
+}
+
+.speech-nameplate__name {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.speech-nameplate__title {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* 正文可读性红线(§2):≥14px / 高对比 / 长句用清晰字体 / 行高 ~1.6 */
+.speech-nameplate__content {
+  margin: 0;
+  font-family: var(--font-readable);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  word-break: break-word;
+}
