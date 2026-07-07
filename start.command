@@ -15,19 +15,27 @@ FRONT_PID=""
 cleanup() {
   trap - INT TERM HUP EXIT      # 防止重复触发
   echo ""
-  echo "🧹 正在关闭并清理…"
+  echo "🧹 正在优雅关闭…"
+  # 前端 + 日志:无数据,直接停
   [ -n "${TAIL_PID:-}" ]  && kill "$TAIL_PID"  2>/dev/null
   [ -n "$FRONT_PID" ] && kill "$FRONT_PID" 2>/dev/null
-  [ -n "$BACK_PID" ]  && kill "$BACK_PID"  2>/dev/null
-  pkill -f "spring-boot:run" 2>/dev/null
   pkill -f "vite" 2>/dev/null
-  lsof -ti:8080 2>/dev/null | xargs kill -9 2>/dev/null
   lsof -ti:5173 2>/dev/null | xargs kill -9 2>/dev/null
-  # 清缓存垃圾(保留数据库 panel.db 与依赖 node_modules/target)
+  # 后端优雅关闭:先 SIGTERM 让 Spring 关数据源 → SQLite 把 WAL 检查点落盘,讨论数据不丢
+  BACK_JAVA="$(lsof -ti:8080 2>/dev/null)"
+  if [ -n "$BACK_JAVA" ]; then
+    echo "   等待后端优雅关闭(SQLite 落盘)…"
+    kill -TERM $BACK_JAVA 2>/dev/null
+    for _ in $(seq 1 20); do lsof -ti:8080 >/dev/null 2>&1 || break; sleep 0.5; done
+  fi
+  # 兜底:仍在则强杀(此时也不删 WAL,数据仍在 WAL 中,下次启动 SQLite 自动恢复)
+  [ -n "$BACK_PID" ] && kill "$BACK_PID" 2>/dev/null
+  pkill -f "spring-boot:run" 2>/dev/null
+  lsof -ti:8080 2>/dev/null | xargs kill -9 2>/dev/null
+  # 只清真正的缓存垃圾;绝不删 db/*.db-wal / *.db-shm(那是已提交的真实数据)
   rm -rf "$RUN_DIR"
-  rm -f "$ROOT"/db/*.db-wal "$ROOT"/db/*.db-shm 2>/dev/null
   rm -rf "$ROOT"/frontend/node_modules/.vite 2>/dev/null
-  echo "✅ 已关闭并清理完毕。"
+  echo "✅ 已安全关闭(讨论数据已保留)。"
   exit 0
 }
 trap cleanup INT TERM HUP EXIT
