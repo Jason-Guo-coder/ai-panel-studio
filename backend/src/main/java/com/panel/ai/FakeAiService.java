@@ -16,6 +16,10 @@ public class FakeAiService implements AiService {
 
     @Override
     public RosterDraft draftRoster(String topic, int expertCount) {
+        // E2E 确定性失败钩子:话题含 __FAIL__ 触发上游异常,用于验证前端错误态渲染
+        if (topic != null && topic.contains("__FAIL__")) {
+            throw new AiUpstreamException("E2E 触发的阵容生成失败");
+        }
         DraftMember host = new DraftMember("主持人阿岚", "圆桌主持人", "主持", "中立引导");
         List<DraftMember> experts = new ArrayList<>();
         for (int i = 1; i <= expertCount; i++) {

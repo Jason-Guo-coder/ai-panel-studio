@@ -16,3 +16,8 @@ node_modules/
 dist/
 build/
 target/
+
+# Playwright
+frontend/test-results/
+frontend/playwright-report/
+frontend/.playwright/
