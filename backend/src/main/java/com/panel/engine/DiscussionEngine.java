@@ -141,7 +141,7 @@ public class DiscussionEngine {
 
     private Speech persist(long discussionId, TurnProposal turn, int seq) {
         Speech s = new Speech();
-        s.setId((long) seq); // 内存 transcript 用 seq 作 id;真实库由 AUTO 回填
+        // 不手设 id:MyBatis-Plus AUTO 回填真实自增 id(全局唯一);内存 transcript 复用回填后的 id
         s.setDiscussionId(discussionId);
         s.setParticipantId(turn.speakerId());
         s.setContent(scheduler.enforceSentenceLimit(turn.content()));
