@@ -1,0 +1,59 @@
+/* 首页 —— 无整页滚动:header 固定,列表区独立滚动。 */
+
+.home {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.home__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg-panel);
+}
+
+.home__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.home__logo {
+  color: var(--live-red);
+  font-size: 20px;
+}
+.home__title {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: 18px;
+  color: var(--text-primary);
+}
+
+.home__new {
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-strong);
+  padding: 8px 14px;
+}
+.home__new:hover {
+  border-color: var(--live-red);
+  color: var(--live-red);
+}
+
+/* 列表区:独立滚动 */
+.home__body {
+  padding: 24px;
+}
+
+/* 响应式网格:窄屏单列,宽屏自动多列 */
+.home__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  align-content: start;
+}
