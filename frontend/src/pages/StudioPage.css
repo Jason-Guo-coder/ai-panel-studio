@@ -1,0 +1,157 @@
+/* 演播厅 §6 —— 无整页滚动:.studio 撑满视口,四区各自独立滚动。
+   三档响应式:<1024 单栏 / 1024–1599 两栏 / ≥1600 三栏。 */
+
+.studio {
+  height: 100%;
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  /* 默认(窄屏 <1024)单栏纵向堆叠 */
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto minmax(0, 2fr) minmax(0, 1.2fr) minmax(0, 1fr);
+  grid-template-areas:
+    "header"
+    "stage"
+    "transcript"
+    "insights"
+    "summary";
+}
+
+.studio--center { display: block; }
+.studio--center > * { height: 100%; }
+
+/* 区块通用外观 */
+.region {
+  min-width: 0;
+  min-height: 0;
+  background: var(--bg-panel);
+  border: 2px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+.region__title {
+  flex: 0 0 auto;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Header ── */
+.studio__header {
+  grid-area: header;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+}
+.studio__back {
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 5px 9px;
+}
+.studio__back:hover { color: var(--text-primary); border-color: var(--border-strong); }
+.studio__topic {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: 15px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 状态 pill */
+.studio__pill {
+  flex: 0 0 auto;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  padding: 3px 8px;
+  border: 1px solid currentColor;
+}
+.pill-live { color: var(--live-red); box-shadow: 0 0 6px var(--live-glow); animation: live-blink 1s steps(2) infinite; }
+.pill-done { color: var(--text-secondary); }
+.pill-warn { color: var(--divergence); }
+.pill-dim { color: var(--text-dim); }
+
+/* ── B 主席台 + 专家小窗 ── */
+.studio__stage { grid-area: stage; }
+.studio__rostrum {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.studio__experts {
+  flex: 1 1 auto;
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  /* 窄屏:专家小窗一行横向滚动 */
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.studio__experts > * { flex: 0 0 240px; }
+
+/* ── A Transcript ── */
+.studio__transcript { grid-area: transcript; }
+.studio__banner {
+  flex: 0 0 auto;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--divergence);
+  background: var(--bg-elevated);
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--divergence);
+}
+.studio__speeches {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+}
+
+/* ── C 共识/分歧 ── */
+.studio__insights { grid-area: insights; padding: 0 10px 10px; }
+.studio__insights .region__title { padding-left: 0; padding-right: 0; }
+
+/* ── D 主持人总结 ── */
+.studio__summary { grid-area: summary; border: none; }
+
+/* ════════ 桌面 1024–1599:两栏 ════════ */
+@media (min-width: 1024px) {
+  .studio {
+    grid-template-columns: 1.6fr 1fr;
+    grid-template-rows: auto 1fr 1fr 1fr;
+    grid-template-areas:
+      "header    header"
+      "transcript stage"
+      "transcript insights"
+      "transcript summary";
+  }
+  /* 桌面/超宽:专家小窗改纵向排列滚动 */
+  .studio__experts {
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  .studio__experts > * { flex: 0 0 auto; }
+}
+
+/* ════════ 超宽 ≥1600:三栏 ════════ */
+@media (min-width: 1600px) {
+  .studio {
+    grid-template-columns: 320px 1fr 360px;
+    grid-template-rows: auto 1fr 1fr;
+    grid-template-areas:
+      "header header    header"
+      "stage  transcript insights"
+      "stage  transcript summary";
+  }
+}
