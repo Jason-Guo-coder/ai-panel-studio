@@ -17,6 +17,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -82,6 +83,14 @@ class DiscussionApiIT extends WebIntegrationTest {
         mvc.perform(post("/api/discussions/" + id + "/regenerate"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.participants.length()").value(5));
+    }
+
+    @Test
+    void delete_removesDiscussion() throws Exception {
+        stubP1();
+        long id = createDiscussion("待删除");
+        mvc.perform(delete("/api/discussions/" + id)).andExpect(status().isNoContent());
+        mvc.perform(get("/api/discussions/" + id)).andExpect(status().isNotFound());
     }
 
     @Test

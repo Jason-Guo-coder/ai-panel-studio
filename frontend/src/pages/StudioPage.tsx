@@ -66,7 +66,13 @@ export default function StudioPage() {
       {/* B 主席台 + 专家小窗 */}
       <section className="studio__stage region" aria-label="主席台与专家">
         <div className="studio__rostrum">
-          {host && <PixelAvatarCard participant={host} compact />}
+          {host && (
+            <PixelAvatarCard
+              participant={host}
+              compact
+              speaking={stream.currentSpeakerId === host.id && stream.phase === 'live'}
+            />
+          )}
         </div>
         <div className="studio__experts scroll-area" ref={expertsRef}>
           {experts.map((e) => {

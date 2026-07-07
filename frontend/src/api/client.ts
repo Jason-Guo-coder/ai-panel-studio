@@ -18,6 +18,7 @@ async function req<T>(url: string, init?: RequestInit): Promise<T> {
     }
     throw new Error(msg)
   }
+  if (res.status === 204) return undefined as T
   return res.json() as Promise<T>
 }
 
@@ -39,4 +40,8 @@ export function regenerate(id: number): Promise<RosterResponse> {
 
 export function confirm(id: number): Promise<{ id: number; status: string }> {
   return req(`${BASE}/${id}/confirm`, { method: 'POST' })
+}
+
+export function deleteDiscussion(id: number): Promise<void> {
+  return req(`${BASE}/${id}`, { method: 'DELETE' })
 }

@@ -5,6 +5,7 @@ import './PixelAvatarCard.css'
 interface Props {
   participant: Participant
   compact?: boolean // 主持人横向紧凑变体(演播厅主席台用)
+  speaking?: boolean // 主持人正在发言(高亮,颜色同主持人中性灰)
 }
 
 // 由 participant.id 派生稳定 hash,保证同一人特征恒定、不同人相异。
@@ -61,7 +62,7 @@ function PixelHead({ features }: { features: Features }) {
   )
 }
 
-export default function PixelAvatarCard({ participant, compact = false }: Props) {
+export default function PixelAvatarCard({ participant, compact = false, speaking = false }: Props) {
   const { role, name, profession, title, stance, color } = participant
   const features = deriveFeatures(participant.id)
 
@@ -69,7 +70,7 @@ export default function PixelAvatarCard({ participant, compact = false }: Props)
     if (compact) {
       // 演播厅主席台:横向紧凑条,仍中性灰 + “主持”徽标 + 主席台描边,明显区别于专家。
       return (
-        <div className="avatar-card is-host compact" aria-label={`主持人 ${name}`}>
+        <div className={`avatar-card is-host compact${speaking ? ' is-speaking' : ''}`} aria-label={`主持人 ${name}`}>
           <div className="host-avatar-wrap">
             <div className="host-crown" aria-hidden="true" />
             <PixelHead features={features} />
@@ -78,6 +79,7 @@ export default function PixelAvatarCard({ participant, compact = false }: Props)
             <div className="avatar-headline">
               <span className="host-badge">主持</span>
               <span className="avatar-name" title={name}>{name}</span>
+              {speaking && <span className="host-speaking">● 发言中</span>}
             </div>
             <span className="avatar-meta">{profession}·{title}</span>
           </div>

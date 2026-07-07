@@ -1,4 +1,4 @@
-import type { KeyboardEvent } from 'react'
+import type { KeyboardEvent, MouseEvent } from 'react'
 import type { DiscussionStatus } from '../types/dto'
 import './DiscussionCard.css'
 
@@ -8,6 +8,7 @@ interface Props {
   expertCount: number
   createdAt: string
   onEnter: () => void
+  onDelete?: () => void // 提供则显示删除按钮(running 除外)
 }
 
 const STATUS_LABEL: Record<Exclude<DiscussionStatus, 'running'>, string> = {
@@ -22,12 +23,17 @@ export default function DiscussionCard({
   expertCount,
   createdAt,
   onEnter,
+  onDelete,
 }: Props) {
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
       onEnter()
     }
+  }
+  const handleDelete = (e: MouseEvent) => {
+    e.stopPropagation()
+    onDelete?.()
   }
 
   return (
@@ -59,6 +65,18 @@ export default function DiscussionCard({
         <span className={`status-tag status-tag-${status}`}>
           {STATUS_LABEL[status]}
         </span>
+      )}
+
+      {onDelete && status !== 'running' && (
+        <button
+          type="button"
+          className="discussion-del"
+          onClick={handleDelete}
+          aria-label="删除讨论"
+          title="删除讨论"
+        >
+          ✕
+        </button>
       )}
     </div>
   )

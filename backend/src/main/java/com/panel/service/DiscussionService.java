@@ -87,6 +87,19 @@ public class DiscussionService {
         return new RosterResponseDto(id, d.getTopic(), d.getStatus(), d.getExpertCount(), roster);
     }
 
+    @Transactional
+    public void delete(long id) {
+        Discussion d = require(id);
+        if ("running".equals(d.getStatus())) {
+            throw new InvalidStateException("讨论进行中,无法删除");
+        }
+        // 显式删子表(不依赖 FK 级联),再删主表
+        participantMapper.delete(new QueryWrapper<Participant>().eq("discussion_id", id));
+        speechMapper.delete(new QueryWrapper<Speech>().eq("discussion_id", id));
+        insightMapper.delete(new QueryWrapper<Insight>().eq("discussion_id", id));
+        discussionMapper.deleteById(id);
+    }
+
     public DiscussionDetailDto detail(long id) {
         Discussion d = require(id);
         List<Participant> participants = participantMapper.selectList(

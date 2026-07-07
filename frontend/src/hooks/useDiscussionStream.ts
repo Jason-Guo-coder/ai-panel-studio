@@ -30,6 +30,13 @@ const EMPTY: DiscussionStream = {
 const bySeq = (a: Speech, b: Speech) => a.seq - b.seq
 const byCreated = (a: Insight, b: Insight) => (a.createdAt < b.createdAt ? -1 : 1)
 
+// 讨论结束时把所有专家复位为待机(避免最后一位卡在发言态)
+function resetIdle(states: Record<number, ExpertLiveState>): Record<number, ExpertLiveState> {
+  const next: Record<number, ExpertLiveState> = {}
+  for (const k of Object.keys(states)) next[Number(k)] = { status: '待机', focus: null }
+  return next
+}
+
 export function useDiscussionStream(id: number | null): DiscussionStream {
   const [state, setState] = useState<DiscussionStream>(EMPTY)
 
@@ -59,10 +66,12 @@ export function useDiscussionStream(id: number | null): DiscussionStream {
           : status === 'interrupted' ? 'interrupted'
             : speeches.length === 0 ? 'empty' : 'live'
 
+      const over = status === 'finished' || status === 'interrupted'
       setState({
         phase, topic: detail.discussion.topic, participants: detail.participants,
         speeches, insights, expertStates,
-        currentSpeakerId: speeches.length ? speeches[speeches.length - 1].participantId : null,
+        // 已结束/已中断:无人发言;进行中:延续最后发言人
+        currentSpeakerId: over ? null : (speeches.length ? speeches[speeches.length - 1].participantId : null),
         summary: detail.discussion.summary,
       })
 
@@ -114,7 +123,13 @@ export function useDiscussionStream(id: number | null): DiscussionStream {
       })
 
       es.addEventListener('finished', () => {
-        setState((prev) => ({ ...prev, phase: 'finished' }))
+        // 结束:复位发言态,最后一位不再卡在"发言中"
+        setState((prev) => ({
+          ...prev,
+          phase: 'finished',
+          currentSpeakerId: null,
+          expertStates: resetIdle(prev.expertStates),
+        }))
         es?.close()
       })
 

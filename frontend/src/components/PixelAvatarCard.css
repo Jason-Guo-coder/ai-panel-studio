@@ -287,3 +287,16 @@
 .avatar-card.is-host.compact .avatar-meta {
   text-align: left;
 }
+/* 主持人发言态:同主持人中性灰的高亮聚光灯 + 标签 */
+.avatar-card.is-host.compact.is-speaking {
+  border-color: var(--host-color);
+  box-shadow: 0 0 0 2px var(--host-color), 0 0 18px 2px var(--host-color);
+}
+.host-speaking {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  color: var(--host-color);
+  border: 1px solid var(--host-color);
+  padding: 0 5px;
+  animation: live-blink 1s steps(2) infinite;
+}

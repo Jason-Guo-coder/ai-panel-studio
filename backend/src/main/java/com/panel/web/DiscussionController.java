@@ -48,4 +48,10 @@ public class DiscussionController {
     public DiscussionDetailDto detail(@PathVariable long id) {
         return service.detail(id);
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable long id) {
+        service.delete(id);
+    }
 }
