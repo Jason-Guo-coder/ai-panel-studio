@@ -8,10 +8,10 @@
 
 <br/>
 
-![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3-6DB33F?logo=springboot&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3-6DB33F?logo=springboot&logoColor=white)
 ![MyBatis-Plus](https://img.shields.io/badge/MyBatis--Plus-3.5-red)
 ![SQLite](https://img.shields.io/badge/SQLite-WAL-003B57?logo=sqlite&logoColor=white)
 ![Deepseek](https://img.shields.io/badge/Deepseek-V4%20Pro-4D6BFE)
@@ -39,18 +39,9 @@
 
 ---
 
-## 🎬 界面预览
-
-> 📸 将演播厅截图放入 `docs/assets/` 后,取消下面注释即可在首页展示:
->
-> <!-- ![演播厅](docs/assets/studio.png) -->
-> <!-- ![嘉宾生成](docs/assets/roster.png) -->
-
----
-
 ## 🚀 快速开始
 
-**前置环境:** JDK 17+ · Node 18+ · Maven 3.9+ ·(真实 AI 需要)Deepseek 账户
+**前置环境:** JDK 17+ · Node 20+ · Maven 3.9+ ·(真实 AI 需要)Deepseek 账户
 
 ```bash
 # 1) 克隆
